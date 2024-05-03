@@ -1,0 +1,97 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: .5px;
+    transition: .3s ease-in-out;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.btns {
+    color: rgb(240, 239, 239);
+    font-weight: 500;
+    background-color: black !important;
+    width: 383px;
+    height: 43px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.btns:hover {
+    color: rgb(139, 138, 138);
+}
+
+.btns::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 380px;
+    height: 15px;
+    border-bottom: 2px solid black !important;
+    border-left: 2px solid black !important;
+    transform: translate(6px, 18px);
+}
+
+.btns::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 10px;
+    height: 40px;
+    border-top: 2px solid black !important;
+    border-right: 2px solid black !important;
+    transform: translate(191px, 4px);
+}
+
+.link {
+    border: 2px solid transparent;
+}
+
+.link:hover {
+    font-weight: bold;
+    border-bottom: 2px solid slategray;
+    transition: .1s;
+}
+
+h1{
+    font-size: 20rem;
+}
+
+#containerReg{
+    background-image: url("./assets/imgReg.jpg");
+    background-repeat: none;
+    background-size: cover;
+    background-position: center center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#containerLog{
+    background-image: url("./assets/imgUser.jpg");
+    background-repeat: none;
+    background-size: cover;
+    background-position: center center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.githubBrand:hover{
+    transform: scale(1.1);
+    filter: drop-shadow(5px 2px 4px #414158);
+}
+
+#containerPurchase{
+    background-image: url("./assets/imgPurchase.jpg");
+    background-repeat: none;
+    background-size: cover;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

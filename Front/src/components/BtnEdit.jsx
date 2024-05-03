@@ -1,0 +1,120 @@
+import React, { useContext, useEffect, useState } from 'react'
+import { Modal } from "flowbite-react";
+import axios from 'axios'
+import { UserContext } from '../context/userContext';
+
+export const BtnEdit = ({ item }) => {
+    const [openModal, setOpenModal] = useState(false);
+    const {changeProd, setChangeProd, userLog} = useContext(UserContext)
+    const [formData, setFormData] = useState({
+        category: item.category,
+        title: item.title,
+        brand: item.brand,
+        code: item.code,
+        stock: item.stock,
+        price: item.price,
+        description: item.description,
+    });
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: value,
+        }));
+    };
+
+    const handleUpdateProduct = async () => {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/products/${item._id}`, formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${userLog.token}`,
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            });
+            setOpenModal(false);
+            setChangeProd((prevChangeProd) => prevChangeProd + 1)
+        } catch (error) {
+            console.error('Error al actualizar el producto:', error);
+        }
+    };
+
+    return (
+        <>
+            <button className='mt-4 text-l font-semibold hover:bg-black hover:text-white w-fit' onClick={() => setOpenModal(true)}>Editar</button>
+            <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
+                <Modal.Header>TUS DATOS</Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <div className="grid md:grid-cols-2 md:gap-6">
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="text" name="category" id="category"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={item.category} value={formData.category} onChange={handleInputChange} />
+                                <label htmlFor="category"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">
+                                    Categoria</label>
+                            </div>
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="text" name="title" id="title"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={item.title} value={formData.title} onChange={handleInputChange} />
+                                <label htmlFor="title"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">Titulo
+                                </label>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 md:gap-6">
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="text" name="brand" id="brand"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={item.brand} value={formData.brand} onChange={handleInputChange} />
+                                <label htmlFor="brand"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">
+                                    Marca</label>
+                            </div>
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="text" name="code" id="code"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={item.code} value={formData.code} onChange={handleInputChange} />
+                                <label htmlFor="code"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">Codigo
+                                </label>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 md:gap-6">
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="number" name="stock" id="stock"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={item.stock} value={formData.stock} onChange={handleInputChange} />
+                                <label htmlFor="stock"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">
+                                    Stock</label>
+                            </div>
+                            <div className="relative z-0 w-full mb-5 group">
+                                <input type="number" name="price" id="price"
+                                    className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
+                                    placeholder={`$ ${item.price.toLocaleString()}`} value={formData.price} onChange={handleInputChange} />
+                                <label htmlFor="price"
+                                    className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">
+                                    Precio</label>
+                            </div>
+                        </div>
+                        <div className="relative z-0 w-full mb-5 group">
+                            <textarea name="description" id="description" cols="30" rows="5" placeholder={item.description} value={formData.description} onChange={handleInputChange}
+                                className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500" />
+                            <label htmlFor="description"
+                                className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 ">Descripción
+                            </label>
+                        </div>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button onClick={handleUpdateProduct} id="updateUser" className="mx-auto btns">ACTUALIZAR PRODUCTO</button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    )
+}
