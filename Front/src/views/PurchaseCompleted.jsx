@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../context/userContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Modal } from 'flowbite-react';
 
 export const PurchaseCompleted = () => {
     const { tickets, setUserCart  } = useContext(UserContext);
+    const [openModal, setOpenModal] = useState(false);
     const navigate = useNavigate()
     const [cart, setCart] = useState([]);
     
@@ -25,13 +27,16 @@ export const PurchaseCompleted = () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/carts/${tickets.cart}/purchase`);
             setUserCart(response.data)   
-            navigate('/')
+            setOpenModal(true)
+            setTimeout(() =>{
+                navigate('/')
+            },3000)
         } catch (error) {
             console.error('Error al actualizar el producto:', error);
         }
     }
 
-    console.log(cart);
+
     return (
         <section className="w-5/6 flex flex-row-reverse gap-10 mx-auto">
             <div className="w-1/2 py-20 mx-auto flex flex-col gap-2">
@@ -108,6 +113,13 @@ export const PurchaseCompleted = () => {
             </div>
             <div id='containerPurchase' className="w-1/2 ">
             </div>
+            <Modal dismissible show={openModal}>
+                    <div className='border rounded-none bg-white'>
+                        <Modal.Body>
+                                <h2 className='font-semibold text-3xl text-center text-slate-800'>GRACIAS POR TU COMPRA!</h2>
+                        </Modal.Body>
+                    </div>
+                </Modal>
         </section>
     );
 }

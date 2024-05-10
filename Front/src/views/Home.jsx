@@ -1,25 +1,42 @@
 import { NavLink, useParams } from "react-router-dom";
 import { ProductsList } from "../components/Home/ProductsList";
 import { Spin } from "../assets/Icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from 'axios'
+import { Carrousel } from "../components/Carrousel";
+import { Filter } from "../components/Filter";
+import { UserContext } from "../context/userContext";
 
 export const Home = () => {
-    const [product, setProduct] = useState(null); 
+    const [product, setProduct] = useState(null);
     const [page, setPage] = useState(1);
+    const {filter} = useContext(UserContext)
     const { cat } = useParams();
-
+    
     useEffect(() => {
-        const dates = async () => {
-            let url = `http://localhost:8080/api/products/?page=${page}`;
-            if (cat) {
-                url = `http://localhost:8080/api/products/?category=${cat}&page=${page}`;
+        filter.brand ? filter.brand = localStorage.getItem('brand') : filter.brand = null
+        filter.limit ? filter.limit = localStorage.getItem('limit') : filter.limit = 10
+        filter.sort ? filter.sort = localStorage.getItem('sort') : filter.sort = null
+        const getProducts = async () => {
+            try {
+                let url = `http://localhost:8080/api/products/?limit=${filter.limit}&page=${page}&sort=${filter.sort}`;
+                if (cat) {
+                    url = `http://localhost:8080/api/products/?limit=${filter.limit}&category=${cat}&page=${page}&sort=${filter.sort}`;
+                }
+                if (filter.brand && cat) {
+                    url = `http://localhost:8080/api/products/?limit=${filter.limit}&brand=${filter.brand}&category=${cat}&page=${page}&sort=${filter.sort}`;
+                } else if (filter.brand) {
+                    url = `http://localhost:8080/api/products/?limit=${filter.limit}&brand=${filter.brand}&page=${page}&sort=${filter.sort}`;
+                }
+                const response = await axios.get(url);
+                setProduct(response.data);
+                console.log(response);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
             }
-            const response = await axios.get(url);
-            setProduct(response.data);
         };
-        dates();
-    }, [cat, page]);
+        getProducts();
+    }, [cat, page, filter.sort, filter.brand, filter.limit]);
 
     const nextPage = () => {
         if (page < product.arrayPages.length) {
@@ -39,6 +56,8 @@ export const Home = () => {
     return (
         <>
             <main>
+                <Carrousel />
+                <Filter />
                 {product ? (
                     <section className="mt-20">
                         <div className="container mx-auto mt-30 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">

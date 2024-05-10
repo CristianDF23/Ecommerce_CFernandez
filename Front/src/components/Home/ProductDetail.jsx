@@ -1,13 +1,18 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext, useState } from 'react'
+import adidas from '../../assets/Marca/adidas.jpg'
+import nike from '../../assets/Marca/nike.jpg'
 import { Link } from 'react-router-dom'
 import { UserContext } from '../../context/userContext'
 import axios from 'axios'
+import { Modal } from 'flowbite-react'
 
 const ProductDetail = ({ item }) => {
+    const [openModal, setOpenModal] = useState(false);
     const sizes = [37, 38, 39, 40, 41, 42, 43, 44]
     const sizeTwo = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"];
-    const { userLog, setUserCart } = useContext(UserContext);
+    const { userLog, setUserCart, infoCart } = useContext(UserContext);
     let url
+
     const handleAddToCart = async () => {
         try {
             if (userLog) {
@@ -16,8 +21,8 @@ const ProductDetail = ({ item }) => {
 
             const response = await axios.post(
                 url, {
-                    pid: item._id
-                },
+                pid: item._id
+            },
                 {
                     headers: {
                         Authorization: `Bearer ${userLog.token}`,
@@ -26,15 +31,19 @@ const ProductDetail = ({ item }) => {
                     withCredentials: true,
                 }
             );
-            setUserCart(response.data); 
+            setOpenModal(true)
+            setUserCart(response.data);
         } catch (error) {
-            console.error('Error adding to cart:', error);
+            console.error('Error al agregar el producto al carrito:', error);
         }
     };
 
-
     return (
+
         <div className="pt-6">
+            {
+                item.brand == 'Adidas' ? <img className='w-60 mx-auto m-7' src={adidas} /> : <img className='w-60 mx-auto m-7' src={nike} />
+            }
             <nav aria-label="Breadcrumb">
                 <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
                     <li>
@@ -163,9 +172,59 @@ const ProductDetail = ({ item }) => {
                             </fieldset>
                         </div>
                         {userLog ?
-                            <button onClick={handleAddToCart}
-                                className="btns">Agregar al Carrito
-                            </button>
+                            <>
+                                <button onClick={handleAddToCart}
+                                    className="btns">Agregar Producto
+                                </button>
+                                <Modal id='modal' dismissible show={openModal}>
+                                    <div className='border rounded-none bg-white'>
+                                        <header className='h-16 flex justify-between items-center'>
+                                            <h2 className='text-3xl text-center w-full font-semibold text-gray-900 dark:text-white'>PRODUCTO AGREGADO AL CARRITO</h2>
+                                            <button type='button' onClick={() => setOpenModal(false)} class="text-gray-400 bg-white translate-x-9 -translate-y-9 border border-black text-4xl w-14 h-14 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">X</button>
+                                        </header>
+                                        <Modal.Body>
+                                            <section className='w-full flex'>
+                                                <div className='w-1/2 px-3'>
+                                                    <div className='flex'>
+                                                        <img className='w-28' src={item.thumbnails.one} alt="" />
+                                                        <div className='ml-3'>
+                                                            <h2 className='text-slate-900 font-semibold'>{item.category.toUpperCase()} {item.brand.toUpperCase()} {item.title.toUpperCase()}</h2>
+                                                            <h3 className='text-slate-900 font-semibold mt-2'>$ {item.price.toLocaleString('es-AR')}</h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='w-1/2 border-l-[1px] px-5 border-black '>
+                                                    <div className='flex flex-col gap-1'>
+                                                        <h2 className='text-sm'>Tu carrito</h2>
+                                                        <h3>{infoCart.quantityBadge} {infoCart.quantityBadge == 1 ? 'Artículo' : 'Artículos'}</h3>
+                                                        <div className='flex justify-between'>
+                                                            <div className='flex flex-col gap-1'>
+                                                                <h3>Precio Total:</h3>
+                                                                <h3>Envío:</h3>
+                                                            </div>
+                                                            <div className='flex flex-col gap-1'>
+                                                                <h3>$ {infoCart.total.toLocaleString('es-AR')}</h3>
+                                                                <h3 className='text-end'>{infoCart.entrega}</h3>
+                                                            </div>
+                                                        </div>
+                                                        <hr className='h-0.5 bg-black' />
+                                                        <div className='flex justify-between mb-5'>
+                                                            <div>
+                                                                <h2 className='font-bold'>Total:</h2>
+                                                                <span className='text-slate-500'>(Impuestos Incluidos)</span>
+                                                            </div>
+                                                            <h3 className='font-bold'>$ {infoCart.total.toLocaleString('es-AR')}</h3>
+                                                        </div>
+                                                        <div className='w-full'>
+                                                            <button className='p-3 border text-start border-black font-semibold w-full hover:text-slate-600'><Link to={'/cart'}>VER CARRITO</Link></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </Modal.Body>
+                                    </div>
+                                </Modal>
+                            </>
                             :
                             ''
                         }

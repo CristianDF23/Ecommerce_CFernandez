@@ -1,7 +1,6 @@
 import { delCart, findCartById, insertCart, upCart } from '../services/carts.services.js'
 import { findProductById } from '../services/products.services.js';
 import { upProduct } from '../services/products.services.js';
-import {sendTicket} from '../controllers/mail.controllers.js'
 
 //Crear carrito nuevo
 export const createCart = async (req, res) => {
@@ -132,8 +131,13 @@ export const purchase = async (req, res) => {
         const updateCart = arrayProducts.filter(elem => elem.product.stock < elem.quantity)
         cart.products = updateCart
         await upCart(req.params.cid, cart)
+        
         for (const productItem of updateStock) {
             productItem.product.stock -= productItem.quantity;
+            if (productItem.product.stock == 0) {
+                productItem.product.status = false
+                await upProduct(productItem.product._id, { stock: productItem.product.stock, status: productItem.product.status });
+            }
             await upProduct(productItem.product._id, { stock: productItem.product.stock });
         }
         res.status(200).json(cart)

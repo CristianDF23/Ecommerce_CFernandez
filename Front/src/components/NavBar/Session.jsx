@@ -1,9 +1,11 @@
 import axios from "axios";
-import {React, useContext} from "react";
+import { React, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from '../../context/userContext'
+import { Modal } from "flowbite-react";
 
 export const LogOut = () => {
+    const [openModal, setOpenModal] = useState(false);
     const { setUserLog } = useContext(UserContext)
     const navigate = useNavigate()
 
@@ -15,8 +17,12 @@ export const LogOut = () => {
                 },
                 withCredentials: true,
             });
-            setUserLog(null)
-            localStorage.removeItem("userLog");
+            setOpenModal(true)
+            setTimeout(() => {
+                setUserLog(null)
+                localStorage.removeItem("userLog");
+                setOpenModal(false)
+            }, 3000)
             navigate('/')
         } catch (error) {
             console.log(error);
@@ -24,9 +30,18 @@ export const LogOut = () => {
     }
 
     return (
-        <button onClick={handleSubmit} className="text-white hover:text-gray-400 mr-10">
-            Cerrar Sesión
-        </button>
+        <>
+            <button onClick={handleSubmit} className="text-white hover:text-gray-400 mr-10">
+                Cerrar Sesión
+            </button>
+            <Modal dismissible show={openModal}>
+                <div className="bg-white border-none rounded-none">
+                    <Modal.Body>
+                        <h2 className="font-semibold text-3xl text-center">GRACIAS POR TU VISITA!</h2>
+                    </Modal.Body>
+                </div>
+            </Modal>
+        </>
     )
 }
 

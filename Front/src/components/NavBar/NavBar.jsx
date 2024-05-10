@@ -30,18 +30,18 @@ export const NavBar = () => {
                     </div>
                 </div>
             </div>
-            <nav className='border border-b-neutral-400'>
-                <div className='w-full flex justify-between p-3 px-10 items-center'>
+            <nav className='border border-b-neutral-200'>
+                <div className='w-full flex justify-between p-1 px-10 items-center'>
                     <Link to='/' className='flex flex-col gap-2'>
-                        <img src={logo} alt="" className='w-12' />
+                        <img src={logo} alt="" className='w-10' />
                     </Link>
                     <ul className='flex gap-4'>
-                        <NavLink to={'/'} className="link block py-2 px-3 text-gray-900 font-semibold">INICIO</NavLink>
+                        <NavLink to={'/'} className="link block py-2 px-3 text-gray-600">INICIO</NavLink>
                         {category.map((cat, index) => (
-                            <NavLink to={`/category/${cat}/page/1`} key={index} className="link block py-2 px-3 text-gray-900 font-semibold">
+                            <NavLink to={`/category/${cat}/page/1`} key={index} className="link block py-2 px-3 text-gray-600">
                                 {cat.toUpperCase()}
                             </NavLink>))}
-                        <NavLink to={'/contact'} className="link block py-2 px-3 text-gray-900 font-semibold">CONTACTO</NavLink>
+                        <NavLink to={'/contact'} className="link block py-2 px-3 text-gray-600">CONTACTO</NavLink>
                     </ul>
                     {user ?
                         <div className='flex gap-7'>
@@ -49,7 +49,7 @@ export const NavBar = () => {
                                 user.rol == 'Usuario' ?
                                     <>
                                         <Link to={'/profile'}><IconUser /></Link>
-                                        <Link to={'/cart'}><IconCart3 number={infoCart.quantityBadge} /></Link>
+                                        <Link to={'/cart'}><IconCart3 number={infoCart.quantityBadge}/></Link>
                                     </>
                                     :
                                     <Link to={'/admin'}><Prods /></Link>

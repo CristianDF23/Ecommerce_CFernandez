@@ -3,10 +3,13 @@ import { CartEmpty } from '../components/Cart/CartEmpty';
 import { FormPage } from '../components/Cart/FormPage';
 import { ProductsCart } from '../components/Cart/ProductsCart';
 import { UserContext } from '../context/userContext';
+import { json } from 'react-router-dom';
 
 export const Cart = () => {
-    const { userLog, productsLength, productsCart, infoCart, cartId } = useContext(UserContext);
-
+    const { userLog, productsLength, productsCart, infoCart } = useContext(UserContext);
+    const user = localStorage.getItem('userLog')
+    const userJson = JSON.parse(user)
+    const cartId = userJson.cart
     return (
         <section>
             <div className="border border-y-gray-300 py-3 pl-4 text-xl font-semibold">

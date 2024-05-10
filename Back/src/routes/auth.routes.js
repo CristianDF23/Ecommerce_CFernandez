@@ -7,7 +7,7 @@ import { authorization } from "../middleware/authorization.js";
 const routerAuth = Router();
 
 routerAuth.post('/register', passport.authenticate('register', { failureMessage: 'El usuario ya existe' }), (req, res) => {
-    return res.status(201).redirect('http://localhost:5173/');
+    return res.status(201).redirect('http://localhost:5173/login');
 })
 
 routerAuth.post('/login', loginUser);

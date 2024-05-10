@@ -9,12 +9,16 @@ export const Product = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        const dates = async () => {
-            let url = `http://localhost:8080/api/products/${id}`;
-            const response = await axios.get(url);
-            setProduct(response.data);
+        const getProduct = async () => {
+            try {
+                let url = `http://localhost:8080/api/products/${id}`;
+                const response = await axios.get(url);
+                setProduct(response.data);
+            } catch (error) {
+                console.error('Error al obtener el producto:', error);
+            }
         };
-        dates();
+        getProduct();
     }, []);
 
     return (

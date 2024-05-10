@@ -10,7 +10,6 @@ import { cookieExtractor } from "../services/auth.services.js";
 
 
 export const initPassport = () => {
-    //Registro de Usuario
     passport.use('register', new local.Strategy(
         { usernameField: 'email', passReqToCallback: true },
         async (req, username, password, done) => {

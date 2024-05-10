@@ -3,13 +3,14 @@ import logo from '../assets/logo.png';
 import { useState, useContext } from 'react';
 import axios from 'axios'
 import { UserContext } from '../context/userContext';
+import Swal from 'sweetalert2'
 
 export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { setUserLog } = useContext(UserContext)
-    
+
 
     const handleSubmit = async () => {
         try {
@@ -19,12 +20,45 @@ export const Login = () => {
                 },
                 withCredentials: true,
             });
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: "Inicio de sesión exitoso"
+            });
             setUserLog(response.data);
-            localStorage.setItem("userLog", JSON.stringify(response.data)); 
-            navigate('/');
+            localStorage.setItem("userLog", JSON.stringify(response.data));
+            setTimeout(() => {
+                response.data.rol == 'Usuario' ? navigate('/profile') : navigate('/admin')
+            }, 2000)
+
         } catch (error) {
-            console.error('Error during login:', error);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "error",
+                title: `${error.response.data.Error}`
+            });
         }
+
     }
 
     return (

@@ -95,3 +95,45 @@ h1{
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.disabled-link {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.87;
+    position: relative;
+}
+
+.disabled-link::after {
+    background-color: white;
+    content: 'SIN STOCK';
+    color: rgb(40, 90, 141);
+    font-weight: bolder;
+    font-size: x-large;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2; 
+}
+
+#accordion{
+    border: none;
+    border-radius: 0px;
+}
+
+#accordion:hover{
+    background: none;
+}
+
+#accordion .accComponent{
+    border-radius: 0px;
+    width:100%;
+}
+#accordion .accComponent:focus{
+    border-radius: 0px;
+    box-shadow: none;  
+    background: none;
+}
+#accordion .accComponent:hover{
+    border-radius: 0px;
+    background: none;
+}

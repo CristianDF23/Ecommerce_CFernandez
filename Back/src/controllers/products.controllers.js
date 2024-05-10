@@ -39,10 +39,12 @@ export const createProduct = async (req, res) => {
 //Mostrar todos los productos/Paginación
 export const getProducts = async (req, res) => {
     try {
-        const { limit = 10, page = 1, sort = '', category = '' } = req.query;
+        const { limit = 10, page = 1, sort = '', category = '', brand = ''} = req.query;
         const filter = {};
-        if (category) filter.category = category;
+        if(category) filter.category = category
+        if(brand) filter.brand = brand
 
+        
         const options = {
             limit: parseInt(limit),
             page: parseInt(page),
@@ -55,8 +57,8 @@ export const getProducts = async (req, res) => {
         const status = products ? 'success' : 'error';
         const prevPage = products.hasPrevPage ? products.page - 1 : null;
         const nextPage = products.hasNextPage ? products.page + 1 : null;
-        const prevLink = prevPage ? `/api/products/?category=${category}&limit=${products.limit}&page=${prevPage}` : null;
-        const nextLink = nextPage ? `/api/products/?category=${category}&limit=${products.limit}&page=${nextPage}` : null;
+        const prevLink = prevPage ? `/api/products/?${category ? `category=${category}&` : ''}${brand ? `brand=${brand}&` : ''}limit=${products.limit}&page=${prevPage}&sort=${sort}` : null;
+        const nextLink = nextPage ? `/api/products/?${category ? `category=${category}&` : ''}${brand ? `brand=${brand}&` : ''}llimit=${products.limit}&page=${nextPage}&sort=${sort}` : null;
 
         const product = {
             status,
@@ -110,15 +112,22 @@ export const deleteProduct = async (req, res) => {
 //Actualizar un producto
 export const updateProduct = async (req, res) => {
     try {
-        const updateProd = await upProduct(req.params.pid, req.body);
-        if (!updateProd) {
-            return res.status(400).json({ Msg: `Producto no encontrado` });
-        } else {
-            return res.status(200).json(updateProd);
-        };
+        const { pid } = req.params;
+        const updateData = req.body;
+
+        if (updateData.stock > 0) {
+            updateData.status = true;
+        }else if(updateData.stock == 0){
+            updateData.status = false;
+        }
+
+        const updatedProduct = await upProduct(pid, updateData);
+
+        return res.status(200).json(updatedProduct);
     } catch (error) {
-        console.log(error);
-    };
+        console.error(error);
+        return res.status(500).json({ error: 'Error al actualizar el producto' });
+    }
 };
 
 

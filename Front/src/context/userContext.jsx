@@ -7,6 +7,9 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
 
     const initialUserLog = JSON.parse(localStorage.getItem("userLog")) || null;
+    const [sort, setSort] = useState(null);
+    const [limit, setLimit] = useState(10);
+    const [brand, setBrand] = useState(null);
 
     const [userLog, setUserLog] = useState(initialUserLog);
     const [userCart, setUserCart] = useState([])
@@ -16,9 +19,11 @@ export const UserProvider = ({ children }) => {
     const [productsLength, setProductsLength] = useState(null)
     const [tickets, setTickets] = useState(null)
     const [changeProd, setChangeProd] = useState(0)
+
     if (changeProd == 100) {
         setChangeProd(0)
     }
+
     useEffect(() => {
         if (userLog != null) {
             const fetchCart = async () => {
@@ -34,9 +39,12 @@ export const UserProvider = ({ children }) => {
             };
             fetchCart();
         }
-    }, [userLog, userCart]);
+    }, [userLog, userCart, productsLength]);
 
     let quantityBadge = 0
+
+    productsLength == 0 ? quantityBadge = 0 : quantityBadge
+
     const iva = 1.21
     let subTotal = 0
 
@@ -47,15 +55,15 @@ export const UserProvider = ({ children }) => {
 
     let entrega = 'Gratis'
 
-    let total 
+    let total
     if (subTotal < 60000) {
         entrega = 4500
         total = Math.round((subTotal * iva) + entrega)
-    }else{
+    } else {
         total = Math.round(subTotal * iva)
     }
-    
     const ivaPrice = Math.round(subTotal * 0.21).toLocaleString('es-AR')
+
     const infoCart = {
         quantityBadge,
         subTotal,
@@ -63,8 +71,19 @@ export const UserProvider = ({ children }) => {
         entrega,
         ivaPrice
     }
+
+    const filter = {
+        sort,
+        setSort,
+        brand,
+        setBrand,
+        limit,
+        setLimit
+    }
+
+
     return (
-        <UserContext.Provider value={{ userCart, tickets, setTickets, infoCart, userLog, setUserLog, setProductsLength, productsLength, productsCart, setUserCart, cartId, changeProd, setChangeProd }}>
+        <UserContext.Provider value={{ filter, userCart, tickets, setTickets, infoCart, userLog, setUserLog, setProductsLength, productsLength, productsCart, setUserCart, cartId, changeProd, setChangeProd }}>
             {children}
         </UserContext.Provider>
     );
