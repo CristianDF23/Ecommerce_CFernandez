@@ -1,4 +1,4 @@
-import { insertProduct, findProductById, findProduct, allProducts, delProduct, upProduct } from "../services/products.services.js";
+import { insertProduct, findProductById, allProducts, delProduct, upProduct } from "../services/products.services.js";
 import { changeNameImg } from "../utils/multer.js";
 
 //Crear producto nuevo
@@ -96,7 +96,6 @@ export const getProduct = async (req, res) => {
 
 //Eliminar un producto
 export const deleteProduct = async (req, res) => {
-    console.log(req.params);
     try {
         const deleteById = await delProduct(req.params.pid);
         if (!deleteById) {

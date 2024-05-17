@@ -4,6 +4,7 @@ import routerCarts from "./carts.routes.js";
 import routerAuth from "./auth.routes.js";
 import routerMail from "./mail.routes.js";
 import routerMocks from "./mocks.routes.js";
+import routerLogger from "./logger.routes.js";
 
 const routerIndex = Router();
 
@@ -12,5 +13,6 @@ routerIndex.use('/api/carts', routerCarts);
 routerIndex.use('/api/auth', routerAuth);
 routerIndex.use('/api/tickets', routerMail);
 routerIndex.use('/api/mocks', routerMocks)
+routerIndex.use('/api/loggers', routerLogger)
 
 export default routerIndex

@@ -12,8 +12,7 @@ export const createCart = async (req, res) => {
             return res.status(201).json(newCart);
         };
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Agregar producto al carrito
@@ -36,8 +35,7 @@ export const addProducts = async (req, res) => {
         await upCart(req.params.cid, cart);
         return res.status(201).json(cart);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Mostrar productos del carrito
@@ -50,8 +48,7 @@ export const getCartProducts = async (req, res) => {
             return res.status(201).json(cart);
         };
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Eliminar carrito
@@ -64,8 +61,7 @@ export const deleteCart = async (req, res) => {
             return res.status(200).json({ Msg: `Carrito eliminado correctamente` });
         };
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Eliminar un producto del carrito
@@ -83,8 +79,7 @@ export const deleteProductOfCart = async (req, res) => {
         await cart.save();
         return res.status(200).json(cart);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Eliminar todos los productos del carrito
@@ -98,8 +93,7 @@ export const deleteAllProducts = async (req, res) => {
         await cart.save()
         return res.status(200).json({ Msg: `Productos eliminados correctamente`, cart });
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Actualizar la cantidad de un producto
@@ -117,8 +111,7 @@ export const updateQuantity = async (req, res) => {
         await cart.save();
         return res.status(200).json(cart);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 
@@ -142,7 +135,5 @@ export const purchase = async (req, res) => {
         }
         res.status(200).json(cart)
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: 'Error al procesar la compra' });
-    }
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };

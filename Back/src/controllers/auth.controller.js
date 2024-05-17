@@ -12,8 +12,7 @@ export const registerUser = async (data) => {
         const user = await insertUser(newUser);
         return user;
     } catch (error) {
-        return false;
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Login de Usuario
@@ -41,8 +40,7 @@ export const loginUser = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Login de Usuario con github
@@ -58,9 +56,7 @@ export const loginGithub = async (data) => {
         const user = await insertUser(userNew);
         return user;
     } catch (error) {
-        console.log('Error encontrado: \n', error);
-        return false
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Logout de Usuario
@@ -68,8 +64,7 @@ export const logout = async (req, res) => {
     try {
         return res.clearCookie('cookieToken').send('Cookie Eliminada')
     } catch (error) {
-        console.log('Error encontrado: \n', error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Actualización de Usuario
@@ -82,8 +77,7 @@ export const updateUser = async (req, res) => {
             return res.status(200).json(updateUs);
         };
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };
 
 //Eliminar usuario
@@ -96,6 +90,5 @@ export const deleteUser = async (req, res) => {
             return res.status(200).json(deleteUs)
         };
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
 };

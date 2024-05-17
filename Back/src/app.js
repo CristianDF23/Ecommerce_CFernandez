@@ -9,6 +9,7 @@ import passport from 'passport';
 import cookieParser from 'cookie-parser'
 import { __dirname } from "./path.js"
 import { commandAndDotenvConfig } from './config/command.dotenv.js';
+import { addLogger } from './config/loggers.js';
 
 
 const app = express();
@@ -42,7 +43,9 @@ app.use(passport.session());
 initPassport();
 app.use(passport.initialize());
 
-app.use(routerIndex)
+app.use(addLogger);
+
+app.use(routerIndex);
 
 let PORT = process.env.PORT || 8080;
 

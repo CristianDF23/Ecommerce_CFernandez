@@ -3,7 +3,6 @@ import { CartEmpty } from '../components/Cart/CartEmpty';
 import { FormPage } from '../components/Cart/FormPage';
 import { ProductsCart } from '../components/Cart/ProductsCart';
 import { UserContext } from '../context/userContext';
-import { json } from 'react-router-dom';
 
 export const Cart = () => {
     const { userLog, productsLength, productsCart, infoCart } = useContext(UserContext);

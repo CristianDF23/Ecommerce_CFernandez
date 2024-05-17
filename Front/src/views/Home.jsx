@@ -30,7 +30,6 @@ export const Home = () => {
                 }
                 const response = await axios.get(url);
                 setProduct(response.data);
-                console.log(response);
             } catch (error) {
                 console.error('Error al obtener productos:', error);
             }
