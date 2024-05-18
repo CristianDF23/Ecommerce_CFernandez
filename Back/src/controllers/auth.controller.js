@@ -12,35 +12,40 @@ export const registerUser = async (data) => {
         const user = await insertUser(newUser);
         return user;
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
-};
+        return error
+    }
+}
 
 //Login de Usuario
 export const loginUser = async (req, res) => {
     try {
         const user = await findUserByEmail(req.body.email);
-        const { _id, email, first_name, last_name, phone, age, cart, rol } = user
-        console.log(_id);
-        if (user) {
-            const validPassword = isValidatePassword(user.password, req.body.password);
-            if (validPassword) {
-                let token = jwt.sign(
-                    { email: req.body.email, password: req.body.password, rol: user.rol },
-                    'ecommerceSecret',
-                    { expiresIn: '24h' }
-                )
-                res.cookie('cookieToken', token, {
-                    maxAge: 60 * 60 * 1000,
-                    sameSite: 'None',
-                    secure: true,
-                    httpOnly: true,
-                }).json({ _id, email, first_name, last_name, phone, age, cart, rol, token })
-            } else {
-                res.status(401).send({ Error: `Usuario y/o Contraseña incorrecta` })
-            }
+        if (!user) {
+            return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
         }
+
+        const validPassword = isValidatePassword(user.password, req.body.password);
+        if (!validPassword) {
+            return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
+        }
+
+        const { _id, email, first_name, last_name, phone, age, cart, rol } = user;
+        const token = jwt.sign(
+            { email: req.body.email, password: req.body.password, rol: user.rol },
+            'ecommerceSecret',
+            { expiresIn: '24h' }
+        );
+
+        res.cookie('cookieToken', token, {
+            maxAge: 60 * 60 * 1000,
+            sameSite: 'None',
+            secure: true,
+            httpOnly: true,
+        }).json({ _id, email, first_name, last_name, phone, age, cart, rol, token });
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
+        req.logger.error(`Error en loginUser: ${error}`);
+        res.status(500).json({ Error: `Error interno del servidor` });
+    }
 };
 
 //Login de Usuario con github
@@ -56,28 +61,32 @@ export const loginGithub = async (data) => {
         const user = await insertUser(userNew);
         return user;
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
+        return error
+    };
 };
 
 //Logout de Usuario
 export const logout = async (req, res) => {
     try {
-        return res.clearCookie('cookieToken').send('Cookie Eliminada')
+        return res.clearCookie('cookieToken').send('Cookie Eliminada');
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
+        req.logger.error(`Error en logout: ${error}`);
+        res.status(500).send('Error al eliminar la cookie');
+    }
 };
-
 //Actualización de Usuario
 export const updateUser = async (req, res) => {
     try {
         const updateUs = await upUser(req.params.uid, req.body);
         if (!updateUs) {
+            req.logger.warning(`No se pudo actualizar el usuario`);
             return res.status(400).json({ Msg: `Usuario no encontrado` });
-        } else {
-            return res.status(200).json(updateUs);
-        };
+        }
+        return res.status(200).json(updateUs);
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
+        req.logger.error(`Error en updateUser: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };
 
 //Eliminar usuario
@@ -85,10 +94,12 @@ export const deleteUser = async (req, res) => {
     try {
         const deleteUs = await delUser(req.params.uid);
         if (!deleteUs) {
+            req.logger.warning(`No se pudo eliminar el usuario`);
             return res.status(400).json({ Msg: `Usuario no encontrado` });
-        } else {
-            return res.status(200).json(deleteUs)
-        };
+        }
+        return res.status(200).json(deleteUs);
     } catch (error) {
-        req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`)};
+        req.logger.error(`Error en deleteUser: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };

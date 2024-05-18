@@ -19,6 +19,8 @@ export const sendTicket = async (ticket, products, recipientEmail) => {
 };
 
 export const insertTicket = async (req, res) => {
+    req.logger.info(`Creando ticket de compra - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
     try {
         const ticket = {
             codeTicket: Math.floor(Math.random() * 100000000),
@@ -30,11 +32,19 @@ export const insertTicket = async (req, res) => {
             detailPay: req.body.detailPay
         };
         const cart = await findCartById(ticket.cart);
+
+        if (!cart) {
+            req.logger.warning(`Carrito con ID ${ticket.cart} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ Msg: `Carrito no encontrado` });
+        }
+
         sendTicket(ticket, cart.products, ticket.purchaser);
         const newTicket = await createTicket(ticket);
-        res.json(newTicket);
+        
+        req.logger.info(`Ticket de compra creado con éxito - Código: ${ticket.codeTicket} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        return res.json(newTicket);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Error al procesar la solicitud' });
+        req.logger.error(`Error en insertTicket: ${error}`);
+        return res.status(500).json({ Msg: error });
     }
 };

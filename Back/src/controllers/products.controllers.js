@@ -3,7 +3,10 @@ import { changeNameImg } from "../utils/multer.js";
 
 //Crear producto nuevo
 export const createProduct = async (req, res) => {
-    const images = req.files.map(changeNameImg)
+    req.logger.info(`Iniciando la creación del producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
+    const images = req.files.map(changeNameImg);
+
     try {
         const thumbnails = {};
         images.forEach((file, index) => {
@@ -17,6 +20,7 @@ export const createProduct = async (req, res) => {
                 thumbnails.four = file;
             }
         });
+
         const product = {
             code: req.body.code,
             status: true,
@@ -27,24 +31,32 @@ export const createProduct = async (req, res) => {
             thumbnails,
             description: req.body.description,
             price: req.body.price
-        }
-        const newProduct = await insertProduct(product);
-        return res.status(201).redirect('http://localhost:5173/admin');
+        };
 
+        const newProduct = await insertProduct(product);
+        if (!newProduct) {
+            req.logger.warning(`Error al crear el producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(400).json({ Msg: `Error al crear el producto` });
+        }
+        
+        req.logger.info(`Producto creado con éxito - ID: ${newProduct._id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        return res.status(201).redirect('http://localhost:5173/admin');
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en createProduct: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };
 
 //Mostrar todos los productos/Paginación
 export const getProducts = async (req, res) => {
-    try {
-        const { limit = 10, page = 1, sort = '', category = '', brand = ''} = req.query;
-        const filter = {};
-        if(category) filter.category = category
-        if(brand) filter.brand = brand
+    req.logger.info(`Obteniendo productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
-        
+    try {
+        const { limit = 10, page = 1, sort = '', category = '', brand = '' } = req.query;
+        const filter = {};
+        if (category) filter.category = category;
+        if (brand) filter.brand = brand;
+
         const options = {
             limit: parseInt(limit),
             page: parseInt(page),
@@ -54,7 +66,12 @@ export const getProducts = async (req, res) => {
 
         const products = await allProducts(filter, options);
 
-        const status = products ? 'success' : 'error';
+        if (!products) {
+            req.logger.warning(`No se encontraron productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ Msg: 'No se encontraron productos' });
+        }
+
+        const status = 'success';
         const prevPage = products.hasPrevPage ? products.page - 1 : null;
         const nextPage = products.hasNextPage ? products.page + 1 : null;
         const prevLink = prevPage ? `/api/products/?${category ? `category=${category}&` : ''}${brand ? `brand=${brand}&` : ''}limit=${products.limit}&page=${prevPage}&sort=${sort}` : null;
@@ -73,61 +90,84 @@ export const getProducts = async (req, res) => {
             nextLink,
         };
         const pages = Array.from({ length: product.totalPages }, (_, i) => i + 1);
-        product.arrayPages = pages
+        product.arrayPages = pages;
+        req.logger.info(`Productos obtenidos con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(200).json(product);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en getProducts: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };
+
 
 //Mostrar un producto
 export const getProduct = async (req, res) => {
+    req.logger.info(`Obteniendo producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
     try {
         const product = await findProductById(req.params.pid);
         if (!product) {
-            return res.status(400).json({ Msg: `Producto no encontrado` });
-        } else {
-            return res.status(200).json(product);
-        };
+            req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ Msg: `Producto no encontrado` });
+        }
+        
+        req.logger.info(`Producto con ID ${req.params.pid} obtenido con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        return res.status(200).json(product);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en getProduct: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };
 
 //Eliminar un producto
 export const deleteProduct = async (req, res) => {
+    req.logger.info(`Eliminando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
     try {
         const deleteById = await delProduct(req.params.pid);
         if (!deleteById) {
-            return res.status(400).json({ Msg: `Producto no encontrado` });
-        } else {
-            return res.status(200).json(deleteById)
-        };
+            req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ Msg: `Producto no encontrado` });
+        }
+        
+        req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        return res.status(200).json(deleteById);
     } catch (error) {
-        console.log(error);
-    };
+        req.logger.error(`Error en deleteProduct: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
 };
+
 
 //Actualizar un producto
 export const updateProduct = async (req, res) => {
+    req.logger.info(`Actualizando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
     try {
         const { pid } = req.params;
         const updateData = req.body;
 
         if (updateData.stock > 0) {
             updateData.status = true;
-        }else if(updateData.stock == 0){
+        } else if (updateData.stock === 0) {
             updateData.status = false;
         }
 
         const updatedProduct = await upProduct(pid, updateData);
 
+        if (!updatedProduct) {
+            req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ Msg: `Producto no encontrado` });
+        }
+
+        req.logger.info(`Producto con ID ${req.params.pid} actualizado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(200).json(updatedProduct);
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Error al actualizar el producto' });
+        req.logger.error(`Error en updateProduct: ${error}`);
+        return res.status(500).json({ Msg: error });
     }
 };
+
 
 
 
