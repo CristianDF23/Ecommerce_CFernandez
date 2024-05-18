@@ -1,25 +1,16 @@
 import { insertProduct, findProductById, allProducts, delProduct, upProduct } from "../services/products.services.js";
-import { changeNameImg } from "../utils/multer.js";
 
 //Crear producto nuevo
 export const createProduct = async (req, res) => {
     req.logger.info(`Iniciando la creación del producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
-    const images = req.files.map(changeNameImg);
-
     try {
-        const thumbnails = {};
-        images.forEach((file, index) => {
-            if (index === 0) {
-                thumbnails.one = file;
-            } else if (index === 1) {
-                thumbnails.two = file;
-            } else if (index === 2) {
-                thumbnails.three = file;
-            } else if (index === 3) {
-                thumbnails.four = file;
-            }
-        });
+        const thumbnails =
+        {
+            one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
+            two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
+            three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
+            four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
+        };
 
         const product = {
             code: req.body.code,
@@ -38,7 +29,7 @@ export const createProduct = async (req, res) => {
             req.logger.warning(`Error al crear el producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(400).json({ Msg: `Error al crear el producto` });
         }
-        
+
         req.logger.info(`Producto creado con éxito - ID: ${newProduct._id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(201).redirect('http://localhost:5173/admin');
     } catch (error) {
@@ -110,7 +101,7 @@ export const getProduct = async (req, res) => {
             req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(404).json({ Msg: `Producto no encontrado` });
         }
-        
+
         req.logger.info(`Producto con ID ${req.params.pid} obtenido con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(200).json(product);
     } catch (error) {
@@ -129,7 +120,7 @@ export const deleteProduct = async (req, res) => {
             req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(404).json({ Msg: `Producto no encontrado` });
         }
-        
+
         req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(200).json(deleteById);
     } catch (error) {

@@ -1,6 +1,25 @@
 import React from 'react'
+import Swal from 'sweetalert2'
 
 export const AddProducts = () => {
+
+    const addProd = () => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "bottom-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+        Toast.fire({
+            icon: "success",
+            title: `Producto creado correctamente`
+        });
+    }
 
     return (
         <section className="w-full">
@@ -76,7 +95,7 @@ export const AddProducts = () => {
                                 className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20 " >Imagen
                             </label>
                         </div>
-                        <button id="addProd" type="submit" className="btns">AGREGAR PRODUCTO</button>
+                        <button id="addProd" onClick={addProd} type="submit" className="btns">AGREGAR PRODUCTO</button>
                     </form>
                 </section>
             </section>

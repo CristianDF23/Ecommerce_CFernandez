@@ -1,10 +1,17 @@
 import multer from 'multer'
-import fs from 'node:fs'
+import {__dirname} from '../path.js'
 
-export const upload = multer({ dest: './src/public/img/products' })
+const storage = multer.diskStorage(
+    {
+        destination: (req, file, cb) =>{
+            cb(null, `${__dirname}/public/img/products`)
+        },
+        filename: (req, file, cb) =>{
+            cb(null, `${file.originalname}`)
+        }
+    }
+)
 
-export const changeNameImg = (file) => {
-    const newPath = `./src/public/img/products/${file.originalname}`
-    fs.renameSync(file.path, newPath)
-    return newPath
-}
+export const upload = multer({
+    storage,
+})
