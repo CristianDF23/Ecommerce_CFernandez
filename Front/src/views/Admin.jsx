@@ -3,10 +3,11 @@ import { AddProducts } from '../components/Admin/AddProducts'
 import { ListProducts } from '../components/Admin/ListProducts'
 import axios from 'axios'
 import { UserContext } from '../context/userContext'
+import { ListUsers } from '../components/Admin/ListUsers'
 
 export const Admin = () => {
     const initialValue = 'listProd';
-    const [prods, setProds] = useState(initialValue);
+    const [sectionAdmin, setSectionAdmin] = useState(initialValue);
     const [products, setProducts] = useState(null);
     const [page, setPage] = useState(1);
     const {changeProd, userLog} = useContext(UserContext)
@@ -48,17 +49,21 @@ export const Admin = () => {
             </div>
             <hr className="mt-4" />
             <ul className="flex mt-10 gap-5 justify-center">
-                <li onClick={() => setProds(initialValue)} className="link p-5 font-semibold text-gray-800 cursor-pointer">LISTA DE
+                <li onClick={() => setSectionAdmin(initialValue)} className="link p-5 font-semibold text-gray-800 cursor-pointer">LISTA DE
                     PRODUCTOS
                 </li>
-                <li onClick={() => setProds('addProd')} className="link p-5 font-semibold text-gray-800 cursor-pointer">AGREGAR
+                <li onClick={() => setSectionAdmin('addProd')} className="link p-5 font-semibold text-gray-800 cursor-pointer">AGREGAR
                     PRODUCTOS
                 </li>
+                {userLog.rol == 'Admin' ? <li onClick={() => setSectionAdmin('userList')} className="link p-5 font-semibold text-gray-800 cursor-pointer">LISTA DE USUARIOS
+                </li>
+                :<></>
+                }
             </ul>
             <hr/>
             <section className="flex flex-col w-full mx-auto mt-10">
                 {
-                    prods == initialValue ? <>
+                    sectionAdmin == initialValue ? <>
                         <ListProducts items={date} user={userLog}/> 
                         <div className="mx-auto flex items-center justify-around w-1/2 mt-10 float-center">
                             <button onClick={prevPage} className="px-2 py-2 text-gray-700 text-2xl font-semibold hover:bg-gray-50">
@@ -70,8 +75,7 @@ export const Admin = () => {
                         </div>
 
                     </>
-                        :
-                        <AddProducts user={userLog}/>
+                        : sectionAdmin == 'addProd' ? <AddProducts user={userLog}/> : <ListUsers/>
                 }
             </section>
         </section>

@@ -25,11 +25,11 @@ export const createCart = async (req, res) => {
 //Agregar producto al carrito
 export const addProducts = async (req, res) => {
     req.logger.info(`Iniciando el proceso para agregar productos al carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
+    const user = req.user
     try {
         const product = await findProductById(req.params.pid);
+        console.log(product);
         const cart = await findCartById(req.params.cid);
-
         if (!product) {
             req.logger.warning(`No se encontró el producto - ID: ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(400).json({ Msg: `No se encontró el producto` });
@@ -40,22 +40,28 @@ export const addProducts = async (req, res) => {
             return res.status(400).json({ Msg: `No se encontró el carrito` });
         }
 
-        const existingItem = cart.products.findIndex(item => item.product.id == req.params.pid);
-        if (existingItem === -1) {
-            cart.products.push({ product: req.body.pid, quantity: 1 });
-            req.logger.info(`Producto añadido al carrito - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        if (product.owner == user.email) {
+            req.logger.warning(`No se puede agregar el producto al carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(400).json({ Msg: `No se puede agregar el producto al carrito` });
         } else {
-            cart.products[existingItem].quantity += 1;
-            req.logger.info(`Cantidad de producto incrementada - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid}, Nueva cantidad: ${cart.products[existingItem].quantity} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-        }
+            const existingItem = cart.products.findIndex(item => item.product.id == req.params.pid);
+            if (existingItem === -1) {
+                cart.products.push({ product: req.body.pid, quantity: 1 });
+                req.logger.info(`Producto añadido al carrito - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            } else {
+                cart.products[existingItem].quantity += 1;
+                req.logger.info(`Cantidad de producto incrementada - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid}, Nueva cantidad: ${cart.products[existingItem].quantity} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            }
 
-        await upCart(req.params.cid, cart);
-        req.logger.info(`Carrito actualizado - Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-        return res.status(201).json(cart);
+            await upCart(req.params.cid, cart);
+            req.logger.info(`Carrito actualizado - Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(201).json(cart);
+        }
     } catch (error) {
         req.logger.error(`Error en --> ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`);
         return res.status(500).json({ Msg: error });
     }
+
 };
 
 

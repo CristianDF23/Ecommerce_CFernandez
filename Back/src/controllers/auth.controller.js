@@ -1,6 +1,6 @@
 import { userNew } from '../services/auth.services.js';
 import { insertCart } from '../services/carts.services.js';
-import { insertUser, delUser, findUserByEmail, upUser } from '../services/users.services.js';
+import { insertUser, delUser, findUserByEmail, upUser, allUsers } from '../services/users.services.js';
 import { isValidatePassword } from '../utils/bcrypt.js'
 import jwt from 'jsonwebtoken'
 
@@ -103,3 +103,14 @@ export const deleteUser = async (req, res) => {
         return res.status(500).json({ Msg: error });
     }
 };
+
+//Todos los usuarios
+export const users = async (req, res) =>{
+    try {
+        const listUsers = await allUsers()
+        return res.status(200).json({listUsers})
+    } catch (error) {
+        req.logger.error(`Error en users: ${error}`);
+        return res.status(500).json({ Msg: error });
+    }
+}

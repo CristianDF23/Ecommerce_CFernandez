@@ -51,8 +51,12 @@ export const NavBar = () => {
                                         <Link to={'/profile'}><IconUser /></Link>
                                         <Link to={'/cart'}><IconCart3 number={infoCart.quantityBadge}/></Link>
                                     </>
-                                    :
+                                    : user.rol == 'Premium' ? 
+                                    <>
+                                    <Link to={'/cart'}><IconCart3 number={infoCart.quantityBadge}/></Link>
                                     <Link to={'/admin'}><Prods /></Link>
+                                    </>
+                                    : <Link to={'/admin'}><Prods /></Link>
                             }
                         </div>
                         :

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { deleteUser, loginUser, logout, updateUser } from "../controllers/auth.controller.js";
+import { deleteUser, loginUser, logout, updateUser, users } from "../controllers/auth.controller.js";
 import { authorization } from "../middleware/authorization.js";
+import { allUsers } from "../services/users.services.js";
 
 
 const routerAuth = Router();
@@ -24,7 +25,9 @@ routerAuth.get('/callbackGithub', passport.authenticate('github', {}), (req, res
 });
 
 routerAuth.get('/logout', logout);
-routerAuth.put('/:uid', updateUser)
+routerAuth.put('/premium/:uid', updateUser)
 routerAuth.delete('/:uid', deleteUser)
+routerAuth.get('/', users)
+
 
 export default routerAuth;

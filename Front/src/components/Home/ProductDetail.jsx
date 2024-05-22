@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { UserContext } from '../../context/userContext'
 import axios from 'axios'
 import { Modal } from 'flowbite-react'
+import Swal from 'sweetalert2'
 
 const ProductDetail = ({ item }) => {
     const [openModal, setOpenModal] = useState(false);
@@ -18,7 +19,6 @@ const ProductDetail = ({ item }) => {
             if (userLog) {
                 url = `http://localhost:8080/api/carts/${userLog.cart}/product/${item._id}`;
             }
-
             const response = await axios.post(
                 url, {
                 pid: item._id
@@ -34,7 +34,18 @@ const ProductDetail = ({ item }) => {
             setOpenModal(true)
             setUserCart(response.data);
         } catch (error) {
-            console.error('Error al agregar el producto al carrito:', error);
+            setOpenModal(false);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
+            });
+            console.log(error);
+            Toast.fire({
+                icon: "error",
+                title: "Error al agregar el producto"
+            });
         }
     };
 
@@ -180,7 +191,7 @@ const ProductDetail = ({ item }) => {
                                     <div className='border rounded-none bg-white'>
                                         <header className='h-16 flex justify-between items-center'>
                                             <h2 className='text-3xl text-center w-full font-semibold text-gray-900 dark:text-white'>PRODUCTO AGREGADO AL CARRITO</h2>
-                                            <button type='button' onClick={() => setOpenModal(false)} class="text-gray-400 bg-white translate-x-9 -translate-y-9 border border-black text-4xl w-14 h-14 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">X</button>
+                                            <button type='button' onClick={() => setOpenModal(false)} className="text-gray-400 bg-white translate-x-9 -translate-y-9 border border-black text-4xl w-14 h-14 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">X</button>
                                         </header>
                                         <Modal.Body>
                                             <section className='w-full flex'>

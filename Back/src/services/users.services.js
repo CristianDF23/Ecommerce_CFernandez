@@ -37,3 +37,12 @@ export const upUser = async (uid, user) =>{
         console.log(error);
     };
 };
+
+//Todos los usuarios
+export const allUsers = async () =>{
+    try {
+        return await userModel.find().select('-password')
+    } catch (error) {
+        console.log(error);
+    }
+}

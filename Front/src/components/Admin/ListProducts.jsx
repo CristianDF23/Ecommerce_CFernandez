@@ -23,7 +23,6 @@ export const ListProducts = ({ items, user }) => {
             });
             setChangeProd((prevChangeProd) => prevChangeProd + 1);
             setOpenModal(false);
-    
             const Toast = Swal.mixin({
                 toast: true,
                 position: "bottom-end",
@@ -42,9 +41,12 @@ export const ListProducts = ({ items, user }) => {
                 showConfirmButton: false,
                 timer: 2000,
             });
+            Toast.fire({
+                icon: "error",
+                title: "Error al eliminar el producto"
+            });
         }
-    };
-    
+    }
 
     return (
         <section className="w-full">
