@@ -12,6 +12,7 @@ import { Cart } from './views/Cart';
 import { Admin } from './views/Admin';
 import { User } from './views/User';
 import { PurchaseCompleted } from './views/PurchaseCompleted';
+import { RestorePassword } from './views/RestorePassword';
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                     <Route path='/product/:id' element={<Product />} />
                     <Route path='/register' element={<Register />} />
                     <Route path='/login' element={<Login />} />
+                    <Route path='/restorePass' element={<RestorePassword/>}/>
                     <Route path='/cart' element={<Cart />} />
                     <Route path='/admin' element={<Admin />} />
                     <Route path='/profile' element={<User />} />

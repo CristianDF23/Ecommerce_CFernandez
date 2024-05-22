@@ -1,16 +1,17 @@
 import { transporter } from "../config/nodemailer.js";
-import { mail } from "../utils/mail.js";
+import { mailTicket } from "../utils/mailTicket.js";
+import { mailPassword } from '../utils/mailPassword.js'
 import { createTicket } from "../services/mail.services.js";
 import { findCartById } from '../services/carts.services.js';
 import moment from 'moment';
 
-export const sendTicket = async (ticket, products, recipientEmail) => {
+const sendTicket = async (ticket, products, emailUser) => {
     try {
         const email = await transporter.sendMail({
-            from: 'CSport <cristian.eam@gmail.com>',
-            to: recipientEmail, 
+            from: 'CSport <cristian.eam85@gmail.com>',
+            to: emailUser,
             subject: 'Gracias por tu compra!',
-            html: mail(ticket, products),
+            html: mailTicket(ticket, products),
         });
         console.log('Correo enviado:', email.response);
     } catch (error) {
@@ -40,7 +41,7 @@ export const insertTicket = async (req, res) => {
 
         sendTicket(ticket, cart.products, ticket.purchaser);
         const newTicket = await createTicket(ticket);
-        
+
         req.logger.info(`Ticket de compra creado con éxito - Código: ${ticket.codeTicket} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.json(newTicket);
     } catch (error) {
@@ -48,3 +49,22 @@ export const insertTicket = async (req, res) => {
         return res.status(500).json({ Msg: error });
     }
 };
+
+const sendRestorePassword = async () => {
+    try {
+        const email = await transporter.sendMail({
+            from: 'CSport <cristian.eam85@gmail.com>',
+            to: 'cristian.eam85@gmail.com',
+            subject: 'Gracias por tu compra!',
+            html: mailPassword()
+        });
+        console.log('Correo enviado:', email.response);
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+    }
+};
+
+export const restorePassword = async (req, res) => {
+    sendRestorePassword()
+    res.status(200)
+}

@@ -6,7 +6,7 @@ import passport from 'passport';
 const routerCarts = Router();
 
 routerCarts.post('/', createCart);
-routerCarts.post('/:cid/product/:pid', passport.authenticate('jwt', { session: false }), authorization('Usuario'), addProducts);
+routerCarts.post('/:cid/product/:pid', passport.authenticate('jwt', { session: false }), authorization(['Usuario']), addProducts);
 routerCarts.get('/:cid', getCartProducts);
 routerCarts.delete('/deleteCart/:cid', deleteCart);
 routerCarts.delete('/:cid/product/:pid', deleteProductOfCart);

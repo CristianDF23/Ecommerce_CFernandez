@@ -4,14 +4,25 @@ import { insertProduct, findProductById, allProducts, delProduct, upProduct } fr
 export const createProduct = async (req, res) => {
     req.logger.info(`Iniciando la creación del producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     try {
-        const thumbnails =
-        {
+        const user = req.user
+        let owner;
+        if (user) {
+            if (user.rol == 'Premium') {
+                owner = user.email;
+            } else {
+                owner = 'Admin';
+            }
+        } else {
+            req.logger.error(`Usuario no encontrado con el correo electrónico: ${email}`);
+            return res.status(404).json({ Msg: 'Usuario no encontrado' });
+        }
+
+        const thumbnails = {
             one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
             two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
             three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
             four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
         };
-
         const product = {
             code: req.body.code,
             status: true,
@@ -21,7 +32,8 @@ export const createProduct = async (req, res) => {
             category: req.body.category,
             thumbnails,
             description: req.body.description,
-            price: req.body.price
+            price: req.body.price,
+            owner
         };
 
         const newProduct = await insertProduct(product);
@@ -34,9 +46,10 @@ export const createProduct = async (req, res) => {
         return res.status(201).redirect('http://localhost:5173/admin');
     } catch (error) {
         req.logger.error(`Error en createProduct: ${error}`);
-        return res.status(500).json({ Msg: error });
+        return res.status(500).send({ Msg: error });
     }
 };
+
 
 //Mostrar todos los productos/Paginación
 export const getProducts = async (req, res) => {
@@ -113,16 +126,21 @@ export const getProduct = async (req, res) => {
 //Eliminar un producto
 export const deleteProduct = async (req, res) => {
     req.logger.info(`Eliminando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
+    const { email } = req.user
     try {
-        const deleteById = await delProduct(req.params.pid);
-        if (!deleteById) {
-            req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-            return res.status(404).json({ Msg: `Producto no encontrado` });
+        const prod = await findProductById(req.params.pid)
+        if (prod.owner == email) {
+            const deleteById = await delProduct(req.params.pid)
+            req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(200).json(deleteById);
+        } else if (req.user.rol == 'Admin') {
+            const deleteById = await delProduct(req.params.pid)
+            req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(200).json(deleteById);
+        } else {
+            req.logger.warning(`El usuario no tiene permiso para eliminar este producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            res.status(400).send({ Msg: `Usuario sin autorizacion para eliminar este producto` })
         }
-
-        req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-        return res.status(200).json(deleteById);
     } catch (error) {
         req.logger.error(`Error en deleteProduct: ${error}`);
         return res.status(500).json({ Msg: error });

@@ -6,11 +6,11 @@ import { upload } from '../utils/multer.js';
 
 const routerProduts = Router();
 
-routerProduts.post('/', passport.authenticate('jwt', { session: false }), authorization('Admin'), upload.array('thumbnails', 4), createProduct);
+routerProduts.post('/', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), upload.array('thumbnails', 4), createProduct);
 routerProduts.get('/', getProducts);
 routerProduts.get('/:pid', getProduct)
-routerProduts.delete('/:pid', passport.authenticate('jwt', { session: false }), authorization('Admin'), deleteProduct)
-routerProduts.put('/:pid', passport.authenticate('jwt', { session: false }), authorization('Admin'), updateProduct)
+routerProduts.delete('/:pid', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), deleteProduct)
+routerProduts.put('/:pid', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), updateProduct)
 
 
 export default routerProduts

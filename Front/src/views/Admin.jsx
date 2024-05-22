@@ -44,7 +44,7 @@ export const Admin = () => {
     return (
         <section className="w-full ">
             <div className="ml-5 mt-5">
-                <h2 className="text-2xl font-semibold uppercase">ADMINISTRADOR</h2>
+                <h2 className="text-2xl font-semibold uppercase">{userLog.rol == 'Admin' ? 'ADMINISTRADOR' : `HOLA!, ${userLog.first_name}`}</h2>
             </div>
             <hr className="mt-4" />
             <ul className="flex mt-10 gap-5 justify-center">

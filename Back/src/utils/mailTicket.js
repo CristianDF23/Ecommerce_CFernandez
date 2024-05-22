@@ -1,4 +1,4 @@
-export const mail = (obj, products) => {
+export const mailTicket = (obj, products) => {
 
     let product = products.map(product => {
         return (

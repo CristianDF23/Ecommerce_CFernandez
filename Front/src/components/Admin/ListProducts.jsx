@@ -4,27 +4,48 @@ import { DeleteProd } from '../../assets/Icons.jsx'
 import { UserContext } from '../../context/userContext.jsx';
 import { Modal } from 'flowbite-react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 
 export const ListProducts = ({ items, user }) => {
-    const { setChangeProd } = useContext(UserContext)
+    const { setChangeProd, userLog } = useContext(UserContext)
     const [openModal, setOpenModal] = useState(false);
     const [productId, setProductId] = useState(null);
-    
+
     const handleDeleteProduct = async () => {
-        await axios.delete(`http://localhost:8080/api/products/${productId}`,
-            {
+        try {
+            const resp = await axios.delete(`http://localhost:8080/api/products/${productId}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 withCredentials: true,
-            }
-        )
-        console.log(productId);
-        setChangeProd((prevChangeProd) => prevChangeProd + 1)
-        setOpenModal(false)
-    }
+            });
+            setChangeProd((prevChangeProd) => prevChangeProd + 1);
+            setOpenModal(false);
+    
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
+            });
+            Toast.fire({
+                icon: "success",
+                title: `Producto eliminado exitosamente`
+            });
+        } catch (error) {
+            setOpenModal(false);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        }
+    };
+    
+
     return (
         <section className="w-full">
             <section className="flex flex-col w-full mx-auto mt-10">
@@ -50,15 +71,15 @@ export const ListProducts = ({ items, user }) => {
                                 <td>$ {item.price.toLocaleString()}</td>
                                 <td>{item.stock}</td>
                                 <td className='pb-5'><BtnEdit item={item} /></td>
-                                <td className='pb-1' onClick={() => { setProductId(item._id); setOpenModal(true) }}><DeleteProd/></td>
+                                <td className='pb-1' onClick={() => { setProductId(item._id); setOpenModal(true) }}><DeleteProd /></td>
                             </tr>
                         ))}
                     </tbody>
                     <Modal dismissible show={openModal}>
                         <div className='border rounded-none bg-white'>
                             <header className='h-auto py-4 flex-col flex justify-between items-center'>
-                                    <h2 className='text-3xl text-center w-full font-semibold text-gray-900 dark:text-white'>ESTA SEGURO?</h2>
-                                    <h3 className='text-2xl text-center w-full font-semibold text-gray-500 dark:text-white'>Esto eliminará el producto de su lista</h3>
+                                <h2 className='text-3xl text-center w-full font-semibold text-gray-900 dark:text-white'>ESTA SEGURO?</h2>
+                                <h3 className='text-2xl text-center w-full font-semibold text-gray-500 dark:text-white'>Esto eliminará el producto de su lista</h3>
 
                             </header>
                             <Modal.Body>

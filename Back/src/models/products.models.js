@@ -37,6 +37,9 @@ const productSchema = new Schema({
         type: String,
         require: true
     },
+    owner: {
+        type: String,
+    }
 },
     {
         strict: false

@@ -1,18 +1,20 @@
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
 import { useState, useContext } from 'react';
-import axios from 'axios'
 import { UserContext } from '../context/userContext';
+import logo from '../assets/logo.png';
+import axios from 'axios'
 import Swal from 'sweetalert2'
+
 
 export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { setUserLog } = useContext(UserContext)
+    const [count, setCount] = useState(1)
 
-
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault()
         try {
             const response = await axios.post('http://localhost:8080/api/auth/login', { email, password }, {
                 headers: {
@@ -24,12 +26,7 @@ export const Login = () => {
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
+                timer: 2000
             });
             Toast.fire({
                 icon: "success",
@@ -42,30 +39,23 @@ export const Login = () => {
             }, 2000)
 
         } catch (error) {
+            setCount(() => count + 1)
             const Toast = Swal.mixin({
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
+                timer: 2000
             });
             Toast.fire({
                 icon: "error",
-                title: `${error.response.data.Error}`
+                title: count <= 3 ? `${error.response.data.Error}. Intento ${count}/3` : `Restablezca su contraseña o intente nuevamente mas tarde`
             });
         }
-
     }
 
     return (
         <section className="w-5/6 flex mx-auto">
-            <div
-                className="w-1/2 px-20 py-10 mx-auto flex flex-col gap-2"
-            >
+            <form onSubmit={handleSubmit} className="w-1/2 px-20 py-10 mx-auto flex flex-col gap-2">
                 <div className="mx-auto mb-10 flex flex-col items-center justify-center gap-2 ">
                     <img className="w-20" src={logo} alt="" />
                     <h2 className="font-semibold text-2xl">
@@ -75,7 +65,7 @@ export const Login = () => {
                 <div className="relative z-0 w-full mb-10 group">
                     <input type="email" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
-                        placeholder=" " required />
+                        placeholder=" " required={true} />
                     <label
                         htmlFor="email" className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20">
                         Email
@@ -84,8 +74,7 @@ export const Login = () => {
                 <div className="relative z-0 w-full mb-10 group">
                     <input type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)}
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
-                        placeholder=" " required
-                    />
+                        placeholder=" " required={true} />
                     <label
                         htmlFor="password" className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20">
                         Contraseña
@@ -104,7 +93,7 @@ export const Login = () => {
                         />
                     </svg>
                 </a>
-                <div className="text-center mx-auto">
+                <div className="text-center mx-auto flex flex-col gap-2">
                     <h2 className="text-l text-gray-500 mb-5">
                         No estas registrado?
                     </h2>
@@ -112,12 +101,19 @@ export const Login = () => {
                         className="text-l text-gray-800 hover:text-gray-300">
                         Crear Cuenta
                     </Link>
+                    {count > 4 ? (
+                        <Link to="/restorePass"
+                            className="text-l text-gray-800 hover:text-gray-300 mt-5">
+                            Restablecer Contraseña
+                        </Link>
+                    ) : <div></div>
+                    }
                 </div>
-                <button onClick={handleSubmit}
+                <button type='submit'
                     className="btns mx-auto">
                     Iniciar Sesión
                 </button>
-            </div>
+            </form>
             <div id='containerLog' className="w-1/2 ">
             </div>
         </section>
