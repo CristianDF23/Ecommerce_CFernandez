@@ -2,19 +2,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { UserContext } from '../context/userContext';
 import logo from '../assets/logo.png';
-import axios from 'axios'
-import Swal from 'sweetalert2'
-
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { Modal } from 'flowbite-react';
 
 export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { setUserLog } = useContext(UserContext)
-    const [count, setCount] = useState(1)
+    const { setUserLog } = useContext(UserContext);
+    const [openModal, setOpenModal] = useState(false);
+    const [modalState, setModalState] = useState(false)
+    const [sendEmail, setSendEmail] = useState('')
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
             const response = await axios.post('http://localhost:8080/api/auth/login', { email, password }, {
                 headers: {
@@ -35,11 +37,9 @@ export const Login = () => {
             setUserLog(response.data);
             localStorage.setItem("userLog", JSON.stringify(response.data));
             setTimeout(() => {
-                response.data.rol == 'Usuario' ? navigate('/profile') : navigate('/admin')
-            }, 2000)
-
+                response.data.rol === 'Usuario' ? navigate('/profile') : navigate('/admin');
+            }, 2000);
         } catch (error) {
-            setCount(() => count + 1)
             const Toast = Swal.mixin({
                 toast: true,
                 position: "top-end",
@@ -48,16 +48,44 @@ export const Login = () => {
             });
             Toast.fire({
                 icon: "error",
-                title: count <= 3 ? `${error.response.data.Error}. Intento ${count}/3` : `Restablezca su contraseña o intente nuevamente mas tarde`
+                title: `Usuario y/o contraseña incorrecta`
             });
         }
-    }
+    };
+
+    const handleRestorePassword = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/mails/generateToken', { sendEmail }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            setModalState(true)
+            setEmail('')
+            setPassword('')
+            localStorage.setItem('email', sendEmail)
+            setTimeout(() =>{
+                navigate('/')
+            },5000)
+        } catch (error) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            Toast.fire({
+                icon: "error",
+                title: "Error al enviar el correo"
+            });
+        }
+    };
 
     return (
         <section className="w-5/6 flex mx-auto">
             <form onSubmit={handleSubmit} className="w-1/2 px-20 py-10 mx-auto flex flex-col gap-2">
-                <div className="mx-auto mb-10 flex flex-col items-center justify-center gap-2 ">
-                    <img className="w-20" src={logo} alt="" />
+                <div className="mx-auto mb-10 flex flex-col items-center justify-center gap-2">
+                    <img className="w-20" src={logo} alt="Logo" />
                     <h2 className="font-semibold text-2xl">
                         Inicia sesión en tu cuenta
                     </h2>
@@ -65,7 +93,7 @@ export const Login = () => {
                 <div className="relative z-0 w-full mb-10 group">
                     <input type="email" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
-                        placeholder=" " required={true} />
+                        placeholder=" " required />
                     <label
                         htmlFor="email" className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20">
                         Email
@@ -74,11 +102,15 @@ export const Login = () => {
                 <div className="relative z-0 w-full mb-10 group">
                     <input type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)}
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
-                        placeholder=" " required={true} />
+                        placeholder=" " required />
                     <label
                         htmlFor="password" className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20">
                         Contraseña
                     </label>
+                    <button onClick={() => setOpenModal(true)}
+                        className="text-l text-gray-800 hover:text-gray-300 mt-5 float-end">
+                        Olvidates tu contraseña?
+                    </button>
                 </div>
                 <h2 className="text-l text-gray-500 mb-5 mx-auto">
                     Iniciar sesión con GitHub
@@ -95,28 +127,44 @@ export const Login = () => {
                 </a>
                 <div className="text-center mx-auto flex flex-col gap-2">
                     <h2 className="text-l text-gray-500 mb-5">
-                        No estas registrado?
+                        No estás registrado?
                     </h2>
                     <Link to="/register"
                         className="text-l text-gray-800 hover:text-gray-300">
                         Crear Cuenta
                     </Link>
-                    {count > 4 ? (
-                        <Link to="/restorePass"
-                            className="text-l text-gray-800 hover:text-gray-300 mt-5">
-                            Restablecer Contraseña
-                        </Link>
-                    ) : <div></div>
-                    }
                 </div>
                 <button type='submit'
                     className="btns mx-auto">
                     Iniciar Sesión
                 </button>
             </form>
-            <div id='containerLog' className="w-1/2 ">
-            </div>
+            <div id='containerLog' className="w-1/2 "></div>
+            <>
+                <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
+                    <div className='border rounded-none bg-white'>
+                        {
+                            modalState == false ? (
+                                <Modal.Body>
+                                    <div className='flex flex-col justify-center items-center gap-4'>
+                                        <h2 className='font-semibold text-3xl text-center text-slate-800'>INGRESE SU EMAIL</h2>
+                                        <input className='w-3/4' type='email' name='sendEmail' id='sendEmail' value={sendEmail} onChange={(e) => setSendEmail(e.target.value)} required />
+                                        <button type='button' onClick={handleRestorePassword} className='btns'>ENVIAR CORREO</button>
+                                    </div>
+                                </Modal.Body>
+                            ) : (
+                                <Modal.Body>
+                                    <div className='flex flex-col justify-center items-center gap-4'>
+                                    <h3 className='text-3xl text-center text-slate-800'>Enviamos un correo a</h3>
+                                    <h4 className='text-xl text-center text-slate-800 font-semibold'>{sendEmail}</h4>
+                                    <p className='text-xl text-center text-slate-800'>Ingresá a tu correo y seguí las intrucciones para continuar la recuperación de la contraseña.</p>
+                                    </div>
+                                </Modal.Body>
+                            )
+                        }
+                    </div>
+                </Modal>
+            </>
         </section>
     );
-
-}
+};

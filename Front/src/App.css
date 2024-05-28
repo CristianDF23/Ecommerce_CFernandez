@@ -83,6 +83,15 @@ h1{
     margin-bottom: 10px;
 }
 
+#containerPass{
+    background-image: url("./assets/imgPass.jpg");
+    background-repeat: none;
+    background-size: cover;
+    background-position: center center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .githubBrand:hover{
     transform: scale(1.1);
     filter: drop-shadow(5px 2px 4px #414158);

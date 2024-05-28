@@ -53,6 +53,7 @@ export const NavBar = () => {
                                     </>
                                     : user.rol == 'Premium' ? 
                                     <>
+                                    <Link to={'/profile'}><IconUser /></Link>
                                     <Link to={'/cart'}><IconCart3 number={infoCart.quantityBadge}/></Link>
                                     <Link to={'/admin'}><Prods /></Link>
                                     </>

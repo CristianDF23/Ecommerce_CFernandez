@@ -1,7 +1,7 @@
-import { userNew } from '../services/auth.services.js';
+import { userNew, extractedToken } from '../services/auth.services.js';
 import { insertCart } from '../services/carts.services.js';
 import { insertUser, delUser, findUserByEmail, upUser, allUsers } from '../services/users.services.js';
-import { isValidatePassword } from '../utils/bcrypt.js'
+import { isValidatePassword, createHash } from '../utils/bcrypt.js'
 import jwt from 'jsonwebtoken'
 
 
@@ -105,12 +105,39 @@ export const deleteUser = async (req, res) => {
 };
 
 //Todos los usuarios
-export const users = async (req, res) =>{
+export const users = async (req, res) => {
     try {
         const listUsers = await allUsers()
-        return res.status(200).json({listUsers})
+        return res.status(200).json({ listUsers })
     } catch (error) {
         req.logger.error(`Error en users: ${error}`);
         return res.status(500).json({ Msg: error });
     }
 }
+
+//Cambiar contraseña
+export const updatePassword = async (req, res) => {
+    const { email, token, password } = req.body;
+    req.logger.info(`Solicitud de actualización de contraseña recibida - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
+    const newToken = extractedToken(token);
+
+    try {
+        jwt.verify(newToken, 'ecommerceSecret');
+        req.logger.info(`Token verificado con éxito - Email: ${email} - Token: ${newToken} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
+        const user = await findUserByEmail(email);
+        if (!user) {
+            req.logger.warning(`Usuario no encontrado - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        await upUser(user._id, { password: createHash(password) });
+        req.logger.info(`Contraseña actualizada con éxito - Email: ${email} - Usuario ID: ${user._id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+
+        res.status(200).json({ message: 'Contraseña restablecida correctamente.' });
+    } catch (err) {
+        req.logger.error(`Error en updatePassword: ${err.message} - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+        return res.status(401).json({ message: 'Token inválido o expirado.' });
+    }
+};

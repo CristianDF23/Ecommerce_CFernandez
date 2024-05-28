@@ -56,15 +56,21 @@ export const ListUsers = () => {
                                 <td>{user.first_name}</td>
                                 <td>{user.last_name}</td>
                                 <td className='text-center'>{user.rol}</td>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        name="premium"
-                                        id="premium"
-                                        checked={user.rol === 'Premium'}
-                                        onChange={(e) => updateRol(e, user._id)}
-                                    />
-                                </td>
+                                {user.rol !== 'Admin' ? (
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            name="premium"
+                                            id="premium"
+                                            checked={user.rol === 'Premium'}
+                                            onChange={(e) => updateRol(e, user._id)}
+                                        />
+                                    </td>
+                                ) :
+                                    (
+                                        <></>
+                                    )}
+
                             </tr>
                         ))}
                     </tbody>

@@ -11,7 +11,7 @@ const routerIndex = Router();
 routerIndex.use('/api/products', routerProduts);
 routerIndex.use('/api/carts', routerCarts);
 routerIndex.use('/api/auth', routerAuth);
-routerIndex.use('/api/tickets', routerMail);
+routerIndex.use('/api/mails', routerMail);
 routerIndex.use('/api/mocks', routerMocks)
 routerIndex.use('/api/loggers', routerLogger)
 

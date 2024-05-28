@@ -27,3 +27,8 @@ export const userNew = async (data) => {
     }
     return user
 };
+
+export const extractedToken = (token) =>{
+    const newToken = token.split('token=')[1];
+    return newToken
+}

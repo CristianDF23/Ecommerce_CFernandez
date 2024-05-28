@@ -40,7 +40,7 @@ export const FormPage = ({ user, item, id }) => {
 
     const handleUpdateProduct = async () => {
         try {
-            const response = await axios.post(`http://localhost:8080/api/tickets/newTicket`, formData, {
+            const response = await axios.post(`http://localhost:8080/api/mails/newTicket`, formData, {
                 headers: {
                     Authorization: `Bearer ${userLog.token}`,
                     'Content-Type': 'application/json',
