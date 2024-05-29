@@ -1,7 +1,7 @@
 paths:
   /api/carts/{cid}/product/{pid}:
     post:
-      summary: Agregar un producto al carrito
+      summary: Agregar un producto al carrito (No permite agregar si no se inicia sesion de usuario)
       tags:
         - Carts
       parameters:
@@ -13,6 +13,8 @@ paths:
           name: pid
           required: true
           description: ID del producto
+      security:
+        - JWTAuth: []
       responses:
         "201":
           description: Producto agregado al carrito con éxito

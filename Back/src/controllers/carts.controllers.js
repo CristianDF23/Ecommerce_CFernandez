@@ -45,7 +45,7 @@ export const addProducts = async (req, res) => {
         } else {
             const existingItem = cart.products.findIndex(item => item.product.id == req.params.pid);
             if (existingItem === -1) {
-                cart.products.push({ product: req.body.pid, quantity: 1 });
+                cart.products.push({ product: req.params.pid, quantity: 1 });
                 req.logger.info(`Producto añadido al carrito - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             } else {
                 cart.products[existingItem].quantity += 1;
