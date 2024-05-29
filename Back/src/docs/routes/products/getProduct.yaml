@@ -1,0 +1,45 @@
+paths:
+  /api/products/{pid}:
+    get:
+      summary: Obtener un producto por ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          description: ID del producto a obtener
+          required: true
+          schema:
+            type: string
+          example: "6642dcec94c847351af4e13c"
+      responses:
+        "200":
+          description: Éxito, producto obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "404":
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Msg:
+                    type: string
+                    description: Mensaje de error
+                example:
+                  Msg: "Producto no encontrado"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Msg:
+                    type: string
+                    description: Mensaje de error interno del servidor
+                example:
+                  Msg: "Error interno del servidor"

@@ -28,7 +28,6 @@ export const addProducts = async (req, res) => {
     const user = req.user
     try {
         const product = await findProductById(req.params.pid);
-        console.log(product);
         const cart = await findCartById(req.params.cid);
         if (!product) {
             req.logger.warning(`No se encontró el producto - ID: ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);

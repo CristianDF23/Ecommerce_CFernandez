@@ -17,12 +17,20 @@ export const createProduct = async (req, res) => {
             return res.status(404).json({ Msg: 'Usuario no encontrado' });
         }
 
-        const thumbnails = {
-            one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
-            two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
-            three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
-            four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
-        };
+        let thumbnails
+
+        if (req.files.length == 0) {
+            thumbnails = {}
+        } else {
+            thumbnails = {
+                one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
+                two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
+                three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
+                four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
+            };
+
+        }
+
         const product = {
             code: req.body.code,
             status: true,
@@ -54,7 +62,6 @@ export const createProduct = async (req, res) => {
 //Mostrar todos los productos/Paginación
 export const getProducts = async (req, res) => {
     req.logger.info(`Obteniendo productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const { limit = 10, page = 1, sort = '', category = '', brand = '' } = req.query;
         const filter = {};
