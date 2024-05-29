@@ -11,9 +11,6 @@ paths:
           name: pid
           description: ID del producto a eliminar
           required: true
-          schema:
-            type: string
-          example: "6642dcec94c847351af4e13c"
       responses:
         "200":
           description: Producto eliminado con éxito

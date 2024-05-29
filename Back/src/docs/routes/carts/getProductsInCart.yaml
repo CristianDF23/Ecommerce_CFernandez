@@ -9,24 +9,9 @@ paths:
           name: cid
           required: true
           description: ID del carrito
-          schema:
-            type: string
       responses:
         "200":
           description: Carrito encontrado y productos obtenidos con éxito
-          content:
-            application/json:
-              schema:
-                $ref: '#components/schemas/Cart'
-            examples:
-              example1:
-                value:
-                  _id: "613f2337d6e87a12e409e1c5"
-                  products:
-                    - product: "613f2337d6e87a12e409e1c6"
-                      quantity: 2
-                    - product: "613f2337d6e87a12e409e1c7"
-                      quantity: 1
         "400":
           description: Error al encontrar el carrito
           content:

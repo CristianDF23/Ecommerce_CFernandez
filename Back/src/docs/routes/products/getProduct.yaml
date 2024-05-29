@@ -9,12 +9,9 @@ paths:
           name: pid
           description: ID del producto a obtener
           required: true
-          schema:
-            type: string
-          example: "6642dcec94c847351af4e13c"
       responses:
         "200":
-          description: Éxito, producto obtenido correctamente
+          description: Producto obtenido correctamente
           content:
             application/json:
               schema:

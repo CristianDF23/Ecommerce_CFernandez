@@ -9,15 +9,9 @@ paths:
           name: cid
           required: true
           description: ID del carrito
-          schema:
-            type: string
       responses:
         "200":
           description: Compra realizada con éxito
-          content:
-            application/json:
-              schema:
-                $ref: '#components/schemas/Cart'
         "400":
           description: Error al realizar la compra
           content:

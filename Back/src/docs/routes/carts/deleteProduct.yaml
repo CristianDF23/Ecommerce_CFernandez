@@ -9,14 +9,10 @@ paths:
           name: cid
           required: true
           description: ID del carrito
-          schema:
-            type: string
         - in: path
           name: pid
           required: true
           description: ID del producto a eliminar del carrito
-          schema:
-            type: string
       responses:
         "200":
           description: Producto eliminado del carrito con éxito
