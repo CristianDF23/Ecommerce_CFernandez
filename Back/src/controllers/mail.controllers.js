@@ -1,6 +1,6 @@
-import { transporter } from "../config/nodemailer.js";
-import { mailTicket } from "../utils/mailTicket.js";
-import { mailPassword } from '../utils/mailPassword.js'
+import { transporter } from "../../../config/nodemailer.js";
+import { mailTicket } from "../../../utils/mailTicket.js";
+import { mailPassword } from '../../../utils/mailPassword.js'
 import { createTicket } from "../services/mail.services.js";
 import { findCartById } from '../services/carts.services.js';
 import jwt from 'jsonwebtoken'

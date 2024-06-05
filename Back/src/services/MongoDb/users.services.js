@@ -1,4 +1,4 @@
-import userModel from '../models/users.models.js'
+import userModel from '../../dao/MongoDb/models/users.models.js'
 
 //Crear Usuario
 export const insertUser = async (user) => {
@@ -9,8 +9,8 @@ export const insertUser = async (user) => {
     };
 };
 
-//Buscar usuario por su id
-export const findUserByEmail = async (email) => {
+//Buscar usuario por su email
+export const findUserByEmailMongoDB = async (email) => {
     try {
         return await userModel.findOne({email: email});
     } catch (error) {
@@ -18,7 +18,7 @@ export const findUserByEmail = async (email) => {
     };
 };
 
-// //Eliminar Usuario
+//Eliminar Usuario
 export const delUser = async (uid) => {
     try {
         const user = await userModel.findByIdAndDelete(uid);

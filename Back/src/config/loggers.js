@@ -1,4 +1,4 @@
-import { program } from "./command.dotenv.js";
+import config from "./command.dotenv.js";
 import winston from "winston";
 
 const customLevelsOptions = {
@@ -50,7 +50,7 @@ const prodLogger = winston.createLogger({
 });
 
 export const addLogger = (req, res, next) => {
-    if (program.opts().mode === 'prod') {
+    if (config.mode === 'prod') {
         req.logger = prodLogger;
     } else {
         req.logger = devLogger;

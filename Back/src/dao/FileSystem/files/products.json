@@ -1,0 +1,41 @@
+[
+  {
+    "code": "NK-0001",
+    "status": true,
+    "stock": 10,
+    "brand": "Nike",
+    "title": "Air Jordan 1 Mid SE Craft",
+    "category": "Zapatillas",
+    "thumbnails": {},
+    "description": "Enciende el estilo con esta versión artesanal del Air Jordan 1 Mid. Su confección inspirada en el revés, que incluye capas únicas y detalles de espuma expuesta, eleva el estilo de esta prenda atemporal de la brand Jordan. Detalles como las costuras decorativas en el Swoosh agregan un atractivo codiciado, al tiempo que el sombreado inesperado, la rica mezcla de materiales y la estética envejecida en la entresuela le dan a este lanzamiento un acabado artesanal.",
+    "price": 99999,
+    "owner": "Admin",
+    "_id": "1a0c58f0-3619-477f-badf-518982932700"
+  },
+  {
+    "code": "NK-0006",
+    "status": true,
+    "stock": 30,
+    "brand": "Nike",
+    "title": "Run Swift 3",
+    "category": "Zapatillas",
+    "thumbnails": {},
+    "description": "Sea cual sea la carrera, el Swift 3 estará ahí con una devoción y un soporte imperecederos. Te ayuda a salir y darlo todo para lograr un triple al final del día o una carrera intensa de tres kilómetros de ida y vuelta con un diseño modificado que ofrece soporte, durabilidad y comodidad por todas partes. Te ayudará a conquistar distancias cortas, sin duda, pero también te acompañará desde el punto A al B mientras te abres paso en el ritmo frenético de la vida cotidiana.",
+    "price": 85000,
+    "owner": "Admin",
+    "_id": "9a757bdd-c201-4341-a490-549da410f802"
+  },
+  {
+    "code": "NK-0006",
+    "status": true,
+    "stock": 10,
+    "brand": "Nike",
+    "title": "Air Winflo 9",
+    "category": "Zapatillas",
+    "thumbnails": {},
+    "description": "Lo suficientemente rápido para tus carreras diarias, lo suficientemente ligero para mantenerte en movimiento. Nike Air Winflo 9 tiene un ajuste seguro que mantiene el pie en su lugar mientras pasan los kilómetros. Agregamos mucha espuma en toda la entresuela, dándote más energía a cada paso. Amárrate las agujetas, concéntrate y logra tus objetivos.",
+    "price": 71999,
+    "owner": "Admin",
+    "_id": "625e4948-14c7-4d8d-9620-a1103f3265f4"
+  }
+]

@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon src/app.js --mode dev",
-    "start:prod": "nodemon src/app.js --mode prod"
+    "start:dev": "nodemon src/app.js --mode dev --persist fileSystem",
+    "start:prod": "node src/app.js --mode prod --persist mongoDB"
   },
   "keywords": [],
   "author": "",

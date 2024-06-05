@@ -1,17 +1,9 @@
-import { createHash } from "../utils/bcrypt.js"
+import { createHash } from "../../utils/bcrypt.js"
 import { insertCart } from "./carts.services.js"
-import { capitalizarPrimeraLetra } from "./dto.services.js"
-
-export const cookieExtractor = (req) => {
-    let token = null
-    if (req && req.cookies) {
-        token = req.cookies['cookieToken']
-    }
-    return token
-}
+import { capitalizarPrimeraLetra } from "../../services/DTO.services.js"
 
 export const userNew = async (data) => {
-    if (data.email === 'adminCoder@coder.com' && data.password === 'adminCod3r123') {
+    if (data.email === process.env.ADMIN_USER && data.password === process.env.ADMIN_PASS) {
         userNew.rol = 'Admin';
     };
     const newCart = await insertCart();
@@ -28,7 +20,3 @@ export const userNew = async (data) => {
     return user
 };
 
-export const extractedToken = (token) =>{
-    const newToken = token.split('token=')[1];
-    return newToken
-}

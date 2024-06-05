@@ -7,14 +7,10 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
+import config from './config/command.dotenv.js';
 
-
-import { dbConnect } from './config/mongoDB.js'
 import { initPassport } from './config/passport.js';
-import { __dirname } from "./path.js"
-import { commandAndDotenvConfig } from './config/command.dotenv.js';
 import { addLogger } from './config/loggers.js';
-
 
 const app = express();
 
@@ -23,16 +19,13 @@ const corsOptions = {
     origin: 'http://localhost:5173', 
     credentials: true,
 };
-commandAndDotenvConfig()
-//PUBLIC
-app.use(express.static(__dirname + "/public"))
 
 app.use(cors(corsOptions));
 
 //SESSION
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: process.env.DB_URL
+        mongoUrl: config.mongoUrl
     }),
     secret: process.env.SECRET,
     resave: false,
@@ -65,9 +58,8 @@ app.use(addLogger);
 
 app.use(routerIndex);
 
-let PORT = process.env.PORT || 8080;
+let PORT = config.port;
 
 app.listen(PORT, () => {
     console.log(`Servidor iniciado en PUERTO: ${PORT}`);
-    dbConnect()
 });

@@ -1,16 +1,15 @@
 import { Router } from 'express';
 import { authorization } from '../middleware/authorization.js';
-import { createProduct, deleteProduct, getProduct, getProducts, updateProduct } from "../controllers/products.controllers.js";
+import { productController } from '../services/factory.js'
 import passport from 'passport';
 import { upload } from '../utils/multer.js';
 
 const routerProduts = Router();
 
-routerProduts.post('/', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), upload.array('thumbnails', 4), createProduct);
-routerProduts.get('/', getProducts);
-routerProduts.get('/:pid', getProduct)
-routerProduts.delete('/:pid', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), deleteProduct)
-routerProduts.put('/:pid', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), updateProduct)
-
+routerProduts.post('/', passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), upload.array('thumbnails', 4), productController.createProduct);
+routerProduts.get('/', productController.getProducts);
+routerProduts.get('/:pid', productController.getProduct)
+routerProduts.delete('/:pid',passport.authenticate('jwt', { session: false }), authorization(['Admin', 'Premium']), productController.deleteProduct)
+routerProduts.put('/:pid', productController.updateProduct)
 
 export default routerProduts
