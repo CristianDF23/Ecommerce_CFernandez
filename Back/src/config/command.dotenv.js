@@ -9,15 +9,21 @@ program
     .option('--mode <mode>', 'Modo de trabajo', 'dev')
 program.parse();
 
-//console.log("Options: ", program.opts());
-console.log("Environment Mode Option: ", program.opts().mode);
-console.log("Persistence Mode Option: ", program.opts().persist);
-
 const environment = program.opts().mode;
 
-dotenv.config({
-    path: environment === "prod" ? "./src/config/.env.prod" : "./src/config/.env.dev"
-});
+if (environment == "prod") {
+    dotenv.config({
+        path: "./src/config/.env.prod"
+    })
+}else if(environment == 'dev'){
+    dotenv.config({
+        path: "./src/config/.env.dev"
+    })
+}else{
+    dotenv.config({
+        path: "./src/config/.env.test"
+    })
+}
 
 
 export default {

@@ -1,4 +1,4 @@
-import productsModels from '../../../../models/products.models.js'
+import productsModels from '../../dao/MongoDb/models/products.models.js'
 
 //Agregar Producto
 export const insertProduct = async (product) => {

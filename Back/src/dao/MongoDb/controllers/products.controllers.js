@@ -19,9 +19,9 @@ export default class ProductManagerMongoDB {
                 return res.status(404).json({ Msg: 'Usuario no encontrado' });
             }
 
-            let thumbnails
+            let thumbnails = {}
 
-            if (req.files.length == 0) {
+            if (!req.files && req.files.length == 0) {
                 thumbnails = {}
             } else {
                 thumbnails = {
@@ -49,11 +49,10 @@ export default class ProductManagerMongoDB {
             const newProduct = await insertProduct(product);
             if (!newProduct) {
                 req.logger.warning(`Error al crear el producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-                return res.status(400).json({ Msg: `Error al crear el producto` });
+                return res.status(400).json({ Msg: `Error al crear el producto, el codigo ya existe` });
             }
-
-            req.logger.info(`Producto creado con éxito - ID: ${newProduct._id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-            return res.status(201).redirect('http://localhost:5173/admin');
+            req.logger.info(`Producto creado con éxito - ID: ${newProduct.id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            return res.status(201).json(newProduct);
         } catch (error) {
             req.logger.error(`Error en createProduct: ${error}`);
             return res.status(500).send({ Msg: error });
@@ -116,7 +115,6 @@ export default class ProductManagerMongoDB {
     //Mostrar un producto
     getProduct = async (req, res) => {
         req.logger.info(`Obteniendo producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
         try {
             const product = await findProductById(req.params.pid);
             if (!product) {

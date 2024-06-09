@@ -10,16 +10,15 @@ import swaggerUiExpress from 'swagger-ui-express';
 import config from './config/command.dotenv.js';
 
 import { initPassport } from './config/passport.js';
-import { addLogger } from './config/loggers.js';
+import { addLogger, appLogger } from './config/loggers.js';
 
 const app = express();
 
 app.use(cookieParser());
 const corsOptions = {
-    origin: 'http://localhost:5173', 
+    origin: ['http://localhost:5173', 'http://localhost:8080'],
     credentials: true,
 };
-
 app.use(cors(corsOptions));
 
 //SESSION
@@ -42,9 +41,9 @@ app.use(passport.initialize());
 //Swagger Config
 
 const swaggerOptions = {
-    definition:{
-        openapi:'3.0.1',
-        info:{
+    definition: {
+        openapi: '3.0.1',
+        info: {
             title: 'Documentación API E-commerce',
             description: 'Documentacion de E-commerce'
         }
@@ -60,6 +59,8 @@ app.use(routerIndex);
 
 let PORT = config.port;
 
-app.listen(PORT, () => {
-    console.log(`Servidor iniciado en PUERTO: ${PORT}`);
+app.listen(PORT, async () => {
+    appLogger.http(`Servidor iniciado en PUERTO: ${PORT}`);
+    appLogger.info(`Modo: ${config.mode}`);
+    appLogger.info(`Persistencia: ${config.persistence}`);
 });

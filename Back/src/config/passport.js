@@ -12,10 +12,10 @@ export const initPassport = () => {
         { usernameField: 'email', passReqToCallback: true },
         async (req, username, password, done) => {
             try {
-                const user = await findUser(req.body.email)
-                if (user) {
+                const existingUser = await findUser(req.body.email);
+                if (existingUser) {
                     return done(null, false, 'El usuario ya existe');
-                };
+                }
                 const newUser = await authController.registerUser(req.body)
                 return done(null, newUser);
             } catch (error) {
@@ -38,7 +38,6 @@ export const initPassport = () => {
         }
     ));
 
-
     passport.use('github', new github.Strategy(
         {
             clientID: process.env.GITHUB_CLIENT_ID,
@@ -58,5 +57,13 @@ export const initPassport = () => {
             };
         }
     ))
+
+    passport.serializeUser((user, done) => {
+        done(null, user);
+    });
+
+    passport.deserializeUser((user, done) => {
+        done(null, user);
+    });
 };
 

@@ -1,6 +1,6 @@
 import { userNew } from '../../../services/MongoDb/auth.services.js';
 import { insertCart } from '../../../services/MongoDb/carts.services.js';
-import { insertUser, delUser, findUserByEmailMongoDB, upUser, allUsers } from '../../../services/MongoDb//users.services.js';
+import { insertUser, delUser, findUserByEmailMongoDB, upUser, allUsers } from '../../../services/MongoDb/users.services.js';
 import { isValidatePassword, createHash } from '../../../utils/bcrypt.js'
 import { extractedToken } from '../../../utils/cookies.js'
 import jwt from 'jsonwebtoken'
@@ -142,4 +142,5 @@ export default class UserManagerMongoDB {
             return res.status(401).json({ message: 'Token inválido o expirado.' });
         }
     };
+    
 }

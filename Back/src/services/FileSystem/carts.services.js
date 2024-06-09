@@ -12,7 +12,7 @@ export const insertCart = async () => {
             const res = JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
             carts = res;
         }
-        const newCart = { _id: uuidv4(), products: [] };
+        const newCart = { id: uuidv4(), products: [] };
         carts.push(newCart);
         await fs.promises.writeFile(filePath, JSON.stringify(carts, null, 2), 'utf-8');
         return newCart;

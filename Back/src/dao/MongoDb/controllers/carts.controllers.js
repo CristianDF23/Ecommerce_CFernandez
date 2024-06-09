@@ -1,6 +1,5 @@
-import { delCart, findCartById, insertCart, upCart } from '../services/carts.services.js'
-import { findProductById } from '../services/products.services.js';
-import { upProduct } from '../services/products.services.js';
+import { delCart, findCartById, insertCart, upCart } from '../../../services/MongoDb/carts.services.js'
+import { findProductById, upProduct } from '../../../services/MongoDb/products.services.js';
 
 export default class CartManagerMongoDB {
 
@@ -10,7 +9,6 @@ export default class CartManagerMongoDB {
 
         try {
             const newCart = await insertCart();
-            console.log(newCart);
             if (!newCart) {
                 req.logger.warning(`Error al crear el carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(400).json({ Msg: `Error al crear el carrito` });
@@ -171,6 +169,7 @@ export default class CartManagerMongoDB {
             }
 
             const productIndex = cart.products.findIndex(i => i._id == req.params.pid);
+            console.log(req.params.pid);
             if (productIndex === -1) {
                 req.logger.warning(`No se encontró el producto - ID: ${req.params.pid}, Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(400).json({ Msg: `No se encontró el producto` });

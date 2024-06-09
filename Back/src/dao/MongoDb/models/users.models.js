@@ -9,12 +9,15 @@ const UserSchema = new Schema(
         },
         password: {
             type: String,
+            require: true
         },
         first_name: {
             type: String,
+            require: true
         },
         last_name: {
             type: String,
+            require: true
         },
         phone: {
             type: Number,

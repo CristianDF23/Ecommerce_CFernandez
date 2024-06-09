@@ -1,5 +1,8 @@
 import MongoSingleton from '../config/mongoDB.js'
 import config from '../config/command.dotenv.js'
+import { findUserByEmailMongoDB } from '../services/MongoDb/users.services.js';
+import { findUserByEmailFS } from '../services/FileSystem/users.services.js';
+import { appLogger } from '../config/loggers.js';
 
 const persistence = config.persistence
 
@@ -9,11 +12,11 @@ let authController = null
 let findUser = null
 
 async function connectMongo() {
-    console.log("Iniciando servicio para MongoDB!!");
+    appLogger.info("Iniciando servicio para MongoDB");
     try {
         await MongoSingleton.getInstance();
     } catch (error) {
-        console.error("Error al iniciar MongoDB:", error);
+        appLogger.error("Error al iniciar MongoDB:", error);
         process.exit(1);
     }
 }
@@ -24,7 +27,6 @@ switch (persistence) {
         const { default: ProductManagerMongoDB } = await import('../dao/MongoDb/controllers/products.controllers.js')
         const { default: CartManagerMongoDB } = await import('../dao/MongoDb/controllers/carts.controllers.js')
         const { default: UserManagerMongoDB } = await import('../dao/MongoDb/controllers/auth.controller.js')
-        const { default: findUserByEmailMongoDB } = await import('../services/MongoDb/users.services.js')
         productController = new ProductManagerMongoDB()
         cartController = new CartManagerMongoDB()
         authController = new UserManagerMongoDB()
@@ -35,7 +37,6 @@ switch (persistence) {
         const { default: ProductManagerFS } = await import('../dao/FileSystem/controllers/products.controllers.js')
         const { default: CartManagerFS } = await import('../dao/FileSystem/controllers/carts.controllers.js')
         const { default: UserManagerFS } = await import('../dao/FileSystem/controllers/auth.controller.js')
-        const { default: findUserByEmailFS } = await import('../services/FileSystem/users.services.js')
         productController = new ProductManagerFS()
         cartController = new CartManagerFS()
         authController = new UserManagerFS()

@@ -4,13 +4,11 @@ import { authController } from '../services/factory.js'
 import { authorization } from '../middleware/authorization.js'
 
 const routerAuth = Router()
-
+// .redirect('http://localhost:5173/login')
 routerAuth.post('/register', passport.authenticate('register', { failureMessage: 'El usuario ya existe', }), (req, res) => {
-    return res.status(201).redirect('http://localhost:5173/login')
-}
-)
+    return res.status(201).json(req.user)});
 
-routerAuth.post('/login', loginUser)
+routerAuth.post('/login', authController.loginUser)
 
 routerAuth.get('/profile', passport.authenticate('jwt', { session: false }), authorization('Usuario'), (req, res) => {
     return res.json({ email: req.user.email, rol: req.user.rol })

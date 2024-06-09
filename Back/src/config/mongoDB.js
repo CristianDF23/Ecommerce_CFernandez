@@ -1,4 +1,5 @@
 import { connect } from 'mongoose';
+import { appLogger } from './loggers.js';
 
 export default class MongoSingleton {
     static #instance;
@@ -9,7 +10,7 @@ export default class MongoSingleton {
 
     static getInstance() {
         if (this.#instance) {
-            console.log("Ya se ha abierto una conexion a MongoDB.");
+            appLogger.info("Ya se ha abierto una conexion a MongoDB.");
         } else {
             this.#instance = new MongoSingleton();
         }
@@ -18,28 +19,13 @@ export default class MongoSingleton {
 
     #connectMongoDB = async () => {
         try {
-            await connect(
+            await connect (
                 process.env.DB_URL,
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                    w: 1,
-                }
-            );
-            console.log("Conectado con exito a MongoDB usando Moongose.");
+            ) 
+            appLogger.info('Conectado con exito a MongoDB usando Moongose');
         } catch (error) {
-            console.error("No se pudo conectar a la BD usando Moongose: " + error);
+            appLogger.error("No se pudo conectar a la BD usando Moongose: " + error);
             process.exit();
         }
     };
 };
-
-
-// export const dbConnect = async () => {
-//     try {
-//         await connect(process.env.DB_URL);
-//         console.log('Base de datos conectada');
-//     } catch (error) {
-//         console.log(`Error al conectarse a la base de datos: ${error}`);
-//     }
-// }

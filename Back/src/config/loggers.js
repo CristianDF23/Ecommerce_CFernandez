@@ -57,3 +57,14 @@ export const addLogger = (req, res, next) => {
     }
     next();
 };
+
+export const appLogger = winston.createLogger({
+    level: 'http',
+    format: winston.format.combine(
+            winston.format.colorize({colors: customLevelsOptions.colors}),
+            winston.format.simple()
+    ),
+    transports: [
+        new winston.transports.Console()
+    ]
+});
