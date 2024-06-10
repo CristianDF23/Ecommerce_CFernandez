@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { insertTicket, tokenRestorePassword } from '../controllers/mail.controllers.js';
+import {mailController} from '../services/factory.js'
 
 const routerMail = Router();
 
-routerMail.post('/newTicket', insertTicket)
-routerMail.post('/generateToken', tokenRestorePassword)
+routerMail.post('/newTicket', mailController.insertTicket)
+routerMail.post('/generateToken', mailController.tokenRestorePassword)
 
 export default routerMail;
