@@ -1,6 +1,6 @@
 import { userNew } from '../../../services/MongoDb/auth.services.js';
 import { insertCart } from '../../../services/MongoDb/carts.services.js';
-import { insertUser, delUser, findUserByEmailMongoDB, upUser, allUsers } from '../../../services/MongoDb/users.services.js';
+import { insertUser, deleteUser, findUserByEmailMongoDB, updateUser, getUsers } from '../../../services/MongoDb/users.services.js';
 import { isValidatePassword, createHash } from '../../../utils/bcrypt.js'
 import { extractedToken } from '../../../utils/cookies.js'
 import jwt from 'jsonwebtoken'
@@ -10,8 +10,8 @@ export default class UserManagerMongoDB {
     registerUser = async (data) => {
         try {
             const newUser = await userNew(data)
-            const user = await insertUser(newUser);
-            return user;
+            const registerUser = await insertUser(newUser);
+            return registerUser;
         } catch (error) {
             return error
         }
@@ -20,8 +20,8 @@ export default class UserManagerMongoDB {
     //Login de Usuario
     loginUser = async (req, res) => {
         try {
-            const user = await findUserByEmailMongoDB(req.body.email);
-            if (!user) {
+            const isUserFound = await findUserByEmailMongoDB(req.body.email);
+            if (!isUserFound) {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
 
@@ -30,9 +30,9 @@ export default class UserManagerMongoDB {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
 
-            const { _id, email, first_name, last_name, phone, age, cart, rol } = user;
+            const { _id, email, first_name, last_name, phone, age, cart, rol } = isUserFound;
             const token = jwt.sign(
-                { email: req.body.email, password: req.body.password, rol: user.rol },
+                { email: req.body.email, password: req.body.password, rol },
                 process.env.COOKIE_SECRET,
                 { expiresIn: '24h' }
             );
@@ -44,7 +44,7 @@ export default class UserManagerMongoDB {
                 httpOnly: true,
             }).json({ _id, email, first_name, last_name, phone, age, cart, rol, token });
         } catch (error) {
-            req.logger.error(`Error en loginUser: ${error}`);
+            req.logger.error(`Error al intentar iniciar sesión: ${error}`);
             res.status(500).json({ Error: `Error interno del servidor` });
         }
     };
@@ -52,40 +52,40 @@ export default class UserManagerMongoDB {
     //Login de Usuario con github
     loginGithub = async (data) => {
         try {
-            const newCart = await insertCart();
+            const createCart = await insertCart();
             let userNew = {
                 email: data._json.email,
                 first_name: data._json.name,
                 rol: 'Usuario',
-                cart: newCart[0]._id
+                cart: createCart[0]._id
             };
-            const user = await insertUser(userNew);
-            return user;
+            const registerUserGithub = await insertUser(userNew);
+            return registerUserGithub;
         } catch (error) {
             return error
         };
     };
 
     //Logout de Usuario
-    logout = async (req, res) => {
+    logoutUser = async (req, res) => {
         try {
             return res.clearCookie(process.env.COOKIE_USER).send('Cookie Eliminada');
         } catch (error) {
-            req.logger.error(`Error en logout: ${error}`);
+            req.logger.error(`Error al cerrar sesión: ${error}`);
             res.status(500).send('Error al eliminar la cookie');
         }
     };
     //Actualización de Usuario
     updateUser = async (req, res) => {
         try {
-            const updateUs = await upUser(req.params.uid, req.body);
-            if (!updateUs) {
+            const isUpdateUser = await updateUser(req.params.uid, req.body);
+            if (!isUpdateUser) {
                 req.logger.warning(`No se pudo actualizar el usuario`);
                 return res.status(400).json({ Msg: `Usuario no encontrado` });
             }
-            return res.status(200).json(updateUs);
+            return res.status(200).json(isUpdateUser);
         } catch (error) {
-            req.logger.error(`Error en updateUser: ${error}`);
+            req.logger.error(`Error al actualizar usuario: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };
@@ -93,25 +93,25 @@ export default class UserManagerMongoDB {
     //Eliminar usuario
     deleteUser = async (req, res) => {
         try {
-            const deleteUs = await delUser(req.params.uid);
-            if (!deleteUs) {
+            const isDeleteUser = await deleteUser(req.params.uid);
+            if (!isDeleteUser) {
                 req.logger.warning(`No se pudo eliminar el usuario`);
                 return res.status(400).json({ Msg: `Usuario no encontrado` });
             }
-            return res.status(200).json(deleteUs);
+            return res.status(200).json(isDeleteUser);
         } catch (error) {
-            req.logger.error(`Error en deleteUser: ${error}`);
+            req.logger.error(`Error al eliminar el usuario: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };
 
     //Todos los usuarios
-    users = async (req, res) => {
+    getUsers = async (req, res) => {
         try {
-            const listUsers = await allUsers()
-            return res.status(200).json({ listUsers })
+            const userList = await getUsers()
+            return res.status(200).json({ userList })
         } catch (error) {
-            req.logger.error(`Error en users: ${error}`);
+            req.logger.error(`Error al obtener usuarios: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     }
@@ -127,18 +127,18 @@ export default class UserManagerMongoDB {
             jwt.verify(newToken, process.env.COOKIE_SECRET);
             req.logger.info(`Token verificado con éxito - Email: ${email} - Token: ${newToken} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
-            const user = await findUserByEmailMongoDB(email);
-            if (!user) {
+            const isUserFound = await findUserByEmailMongoDB(email);
+            if (!isUserFound) {
                 req.logger.warning(`Usuario no encontrado - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(404).json({ message: 'Usuario no encontrado.' });
             }
 
-            await upUser(user._id, { password: createHash(password) });
+            await updateUser(isUserFound._id, { password: createHash(password) });
             req.logger.info(`Contraseña actualizada con éxito - Email: ${email} - Usuario ID: ${user._id} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
             res.status(200).json({ message: 'Contraseña restablecida correctamente.' });
         } catch (err) {
-            req.logger.error(`Error en updatePassword: ${err.message} - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+            req.logger.error(`Error al restablecer contraseña: ${err.message} - Email: ${email} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(401).json({ message: 'Token inválido o expirado.' });
         }
     };

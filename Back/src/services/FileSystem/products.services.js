@@ -21,7 +21,7 @@ export const insertProduct = async (product) => {
     }
 };
 
-export const allProducts = async (filter, options) => {
+export const getProducts = async (filter, options) => {
     try {
         if (!fs.existsSync(filePath)) {
             return {
@@ -79,7 +79,7 @@ export const findProductById = async (productId) => {
 };
 
 // Función para actualizar un producto
-export const upProduct = async (productId, updatedProductData) => {
+export const updateProduct = async (productId, updatedProductData) => {
     if (!fs.existsSync(filePath)) {
         return null;
     }

@@ -12,12 +12,12 @@ export const initPassport = () => {
         { usernameField: 'email', passReqToCallback: true },
         async (req, username, password, done) => {
             try {
-                const existingUser = await findUser(req.body.email);
-                if (existingUser) {
+                const existUser = await findUser(req.body.email);
+                if (existUser) {
                     return done(null, false, 'El usuario ya existe');
                 }
-                const newUser = await authController.registerUser(req.body)
-                return done(null, newUser);
+                const registerUser = await authController.registerUser(req.body)
+                return done(null, registerUser);
             } catch (error) {
                 done('Error al registrar el usuario', error);
             };
@@ -50,8 +50,8 @@ export const initPassport = () => {
                 if (user) {
                     return done(null, false, 'El usuario ya existe');
                 };
-                const newUser = await authController.loginGithub(profile)
-                return done(null, newUser);
+                const registerUserGithub = await authController.loginGithub(profile)
+                return done(null, registerUserGithub);
             } catch (error) {
                 return done(error)
             };

@@ -31,7 +31,7 @@ export const findCartById = async (cartId) => {
     return carts.find(cart => cart.id === cartId);
 };
 
-export const upCart = async (cartId, updatedCart) => {
+export const updateCart = async (cartId, updatedCart) => {
     const carts = fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath)) : [];
     const cartIndex = carts.findIndex(cart => cart.id === cartId);
     if (cartIndex !== -1) {
@@ -44,7 +44,7 @@ export const upCart = async (cartId, updatedCart) => {
 
 
 // Función para eliminar un carrito por ID
-export const delCart = async (cartId) => {
+export const deleteCart = async (cartId) => {
     const cartsFilePath = path.join(__dirname, 'carts.json');
     if (!fs.existsSync(cartsFilePath)) {
         return null;

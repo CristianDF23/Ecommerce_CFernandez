@@ -19,7 +19,7 @@ export const findCartById = async (id) => {
 };
 
 // //Eliminar Carrito
-export const delCart = async (cid) => {
+export const deleteCart = async (cid) => {
     try {
         const cart = await cartsModels.findByIdAndDelete(cid);
         return cart
@@ -30,7 +30,7 @@ export const delCart = async (cid) => {
 
 
 //Actualizar Cart
-export const upCart = async (cid, cart) =>{
+export const updateCart = async (cid, cart) =>{
     try {
         return await cartsModels.findByIdAndUpdate(cid, cart, {new: true});
     } catch (error) {

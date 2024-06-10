@@ -34,7 +34,7 @@ export const findUserByEmailFS = async (email) => {
 };
 
 //Eliminar Usuario
-export const delUser = async (uid) => {
+export const deleteUser = async (uid) => {
     try {
         let users = [];
         if (fs.existsSync(filePath)) {
@@ -51,7 +51,7 @@ export const delUser = async (uid) => {
 };
 
 //Actualizar Usuario
-export const upUser = async (uid, updatedUser) => {
+export const updateUser = async (uid, updatedUser) => {
     try {
         let users = [];
         if (fs.existsSync(filePath)) {
@@ -73,7 +73,7 @@ export const upUser = async (uid, updatedUser) => {
 
 
 //Todos los usuarios
-export const allUsers = async () => {
+export const getUsers = async () => {
     try {
         let users = [];
         if (fs.existsSync(filePath)) {

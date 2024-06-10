@@ -10,7 +10,7 @@ export const insertProduct = async (product) => {
 };
 
 //Mostar productos
-export const allProducts = async (filters, option) => {
+export const getProducts = async (filters, option) => {
     try {
         return await productsModels.paginate(filters, option);
     } catch (error) {
@@ -37,7 +37,7 @@ export const findProduct = async (product) => {
 };
 
 //Eliminar Producto
-export const delProduct = async (pid) => {
+export const deleteProduct = async (pid) => {
     try {
         const product = await productsModels.findByIdAndDelete(pid);
         return product;
@@ -47,7 +47,7 @@ export const delProduct = async (pid) => {
 };
 
 //Actualizar Producto
-export const upProduct = async (pid, product) =>{
+export const updateProduct = async (pid, product) =>{
     try {
         return await productsModels.findByIdAndUpdate(pid, product, {new: true});
     } catch (error) {

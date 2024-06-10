@@ -1,4 +1,4 @@
-import { insertProduct, findProductById, allProducts, delProduct, upProduct } from "../../../services/MongoDb/products.services.js";
+import { insertProduct, findProductById, getProducts, deleteProduct, updateProduct } from "../../../services/MongoDb/products.services.js";
 
 export default class ProductManagerMongoDB {
 
@@ -21,16 +21,12 @@ export default class ProductManagerMongoDB {
 
             let thumbnails = {}
 
-            if (!req.files && req.files.length == 0) {
-                thumbnails = {}
+            if (!req.files || req.files.length === 0) {
+                thumbnails
             } else {
-                thumbnails = {
-                    one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
-                    two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
-                    three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
-                    four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
-                };
-
+                req.files.forEach((file, index) => {
+                    thumbnails[`thumbnail_${index + 1}`] = `http://localhost:${process.env.PORT}/img/products/${file.filename}`;
+                });
             }
 
             const product = {
@@ -76,7 +72,7 @@ export default class ProductManagerMongoDB {
 
             if (sort) options.sort = { price: sort === 'desc' ? -1 : 1 };
 
-            const products = await allProducts(filter, options);
+            const products = await getProducts(filter, options);
 
             if (!products) {
                 req.logger.warning(`No se encontraron productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
@@ -135,13 +131,13 @@ export default class ProductManagerMongoDB {
         req.logger.info(`Eliminando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         const { email } = req.user
         try {
-            const prod = await findProductById(req.params.pid)
-            if (prod.owner == email) {
-                const deleteById = await delProduct(req.params.pid)
+            const isProductFound = await findProductById(req.params.pid)
+            if (isProductFound.owner == email) {
+                const deleteById = await deleteProduct(req.params.pid)
                 req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(200).json(deleteById);
             } else if (req.user.rol == 'Admin') {
-                const deleteById = await delProduct(req.params.pid)
+                const deleteById = await deleteProduct(req.params.pid)
                 req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(200).json(deleteById);
             } else {
@@ -149,7 +145,7 @@ export default class ProductManagerMongoDB {
                 res.status(400).send({ Msg: `Usuario sin autorizacion para eliminar este producto` })
             }
         } catch (error) {
-            req.logger.error(`Error en deleteProduct: ${error}`);
+            req.logger.error(`Error al eliminar producto: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };
@@ -169,7 +165,7 @@ export default class ProductManagerMongoDB {
                 updateData.status = false;
             }
 
-            const updatedProduct = await upProduct(pid, updateData);
+            const updatedProduct = await updateProduct(pid, updateData);
 
             if (!updatedProduct) {
                 req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
@@ -179,7 +175,7 @@ export default class ProductManagerMongoDB {
             req.logger.info(`Producto con ID ${req.params.pid} actualizado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(200).json(updatedProduct);
         } catch (error) {
-            req.logger.error(`Error en updateProduct: ${error}`);
+            req.logger.error(`Error al actualizar producto: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };

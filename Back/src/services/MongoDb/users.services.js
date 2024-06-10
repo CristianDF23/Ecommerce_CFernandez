@@ -19,7 +19,7 @@ export const findUserByEmailMongoDB = async (email) => {
 };
 
 //Eliminar Usuario
-export const delUser = async (uid) => {
+export const deleteUser = async (uid) => {
     try {
         const user = await userModel.findByIdAndDelete(uid);
         return user
@@ -30,7 +30,7 @@ export const delUser = async (uid) => {
 
 
 //Actualizar Usuario
-export const upUser = async (uid, user) =>{
+export const updateUser = async (uid, user) =>{
     try {
         return await userModel.findByIdAndUpdate(uid, user, {new: true});
     } catch (error) {
@@ -39,7 +39,7 @@ export const upUser = async (uid, user) =>{
 };
 
 //Todos los usuarios
-export const allUsers = async () =>{
+export const getUsers = async () =>{
     try {
         return await userModel.find().select('-password')
     } catch (error) {

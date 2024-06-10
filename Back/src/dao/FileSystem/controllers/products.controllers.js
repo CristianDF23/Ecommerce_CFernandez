@@ -1,4 +1,4 @@
-import { insertProduct, allProducts, findProductById } from '../../../services/FileSystem/products.services.js'
+import { insertProduct, getProducts, findProductById, updateProduct } from '../../../services/FileSystem/products.services.js'
 import  __dirname  from '../../../path.js';
 import fs from 'fs'
 
@@ -23,14 +23,14 @@ export default class ProductManagerFS {
                 return res.status(404).json({ Msg: 'Usuario no encontrado' });
             }
 
-            let thumbnails = {};
-            if (req.files.length > 0) {
-                thumbnails = {
-                    one: `http://localhost:${process.env.PORT}/img/products/${req.files[0].filename}`,
-                    two: `http://localhost:${process.env.PORT}/img/products/${req.files[1].filename}`,
-                    three: `http://localhost:${process.env.PORT}/img/products/${req.files[2].filename}`,
-                    four: `http://localhost:${process.env.PORT}/img/products/${req.files[3].filename}`
-                };
+            let thumbnails = {}
+
+            if (!req.files || req.files.length === 0) {
+                thumbnails
+            } else {
+                req.files.forEach((file, index) => {
+                    thumbnails[`thumbnail_${index + 1}`] = `http://localhost:${process.env.PORT}/img/products/${file.filename}`;
+                });
             }
 
             const product = {
@@ -76,7 +76,7 @@ export default class ProductManagerFS {
                 sort: sort ? { price: sort === 'desc' ? -1 : 1 } : null,
             };
 
-            const products = await allProducts(filter, options);
+            const products = await getProducts(filter, options);
 
             if (!products) {
                 req.logger.warning(`No se encontraron productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
@@ -134,13 +134,13 @@ export default class ProductManagerFS {
         req.logger.info(`Eliminando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         const { email } = req.user;
         try {
-            const product = await findProductById(req.params.pid);
-            if (!product) {
+            const isProductFound = await findProductById(req.params.pid);
+            if (!isProductFound) {
                 req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(404).json({ Msg: 'Producto no encontrado' });
             }
 
-            if (product.owner === email || req.user.rol === 'Admin') {
+            if (isProductFound.owner === email || req.user.rol === 'Admin') {
                 const products = JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
                 const newProducts = products.filter(p => p._id !== req.params.pid);
                 await fs.promises.writeFile(filePath, JSON.stringify(newProducts, null, 2), 'utf-8');
@@ -152,7 +152,7 @@ export default class ProductManagerFS {
                 return res.status(400).json({ Msg: 'Usuario sin autorización para eliminar este producto' });
             }
         } catch (error) {
-            req.logger.error(`Error en deleteProduct: ${error}`);
+            req.logger.error(`Error al eliminar producto: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };
@@ -160,32 +160,28 @@ export default class ProductManagerFS {
     //Actualizar un producto
     updateProduct = async (req, res) => {
         req.logger.info(`Actualizando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
+    
         try {
             const { pid } = req.params;
             const updateData = req.body;
-
+    
             if (updateData.stock > 0) {
                 updateData.status = true;
             } else if (updateData.stock === 0) {
                 updateData.status = false;
             }
-
-            const products = JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
-            const index = products.findIndex(p => p._id === pid);
-
-            if (index === -1) {
+    
+            const isUpdatedProduct = await updateProduct(pid, updateData);
+    
+            if (!isUpdatedProduct) {
                 req.logger.warning(`Producto con ID ${req.params.pid} no encontrado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(404).json({ Msg: 'Producto no encontrado' });
             }
-
-            products[index] = { ...products[index], ...updateData };
-            await fs.promises.writeFile(filePath, JSON.stringify(products, null, 2), 'utf-8');
-
+    
             req.logger.info(`Producto con ID ${req.params.pid} actualizado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-            return res.status(200).json(products[index]);
+            return res.status(200).json(isUpdatedProduct);
         } catch (error) {
-            req.logger.error(`Error en updateProduct: ${error}`);
+            req.logger.error(`Error al actualizar producto: ${error}`);
             return res.status(500).json({ Msg: error });
         }
     };

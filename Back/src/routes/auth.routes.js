@@ -4,7 +4,7 @@ import { authController } from '../services/factory.js'
 import { authorization } from '../middleware/authorization.js'
 
 const routerAuth = Router()
-// .redirect('http://localhost:5173/login')
+
 routerAuth.post('/register', passport.authenticate('register', { failureMessage: 'El usuario ya existe', }), (req, res) => {
     return res.status(201).json(req.user)});
 
@@ -22,10 +22,10 @@ routerAuth.get('/callbackGithub', passport.authenticate('github', {}), (req, res
     return res.status(201).send({ Msg: `Usuario registrado correctamente` })
 })
 
-routerAuth.get('/logout', authController.logout)
+routerAuth.get('/logout', authController.logoutUser)
 routerAuth.put('/premium/:uid', authController.updateUser)
 routerAuth.delete('/:uid', authController.deleteUser)
-routerAuth.get('/', authController.users)
+routerAuth.get('/', authController.getUsers)
 routerAuth.post('/restorePassword', authController.updatePassword)
 
 export default routerAuth
