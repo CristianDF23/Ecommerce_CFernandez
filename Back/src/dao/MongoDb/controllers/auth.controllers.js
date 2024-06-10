@@ -25,11 +25,10 @@ export default class UserManagerMongoDB {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
 
-            const validPassword = isValidatePassword(user.password, req.body.password);
+            const validPassword = isValidatePassword(isUserFound.password, req.body.password);
             if (!validPassword) {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
-
             const { _id, email, first_name, last_name, phone, age, cart, rol } = isUserFound;
             const token = jwt.sign(
                 { email: req.body.email, password: req.body.password, rol },

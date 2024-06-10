@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../../context/userContext';
 import { Modal } from 'flowbite-react';
+import Card from '../Card';
 
 export const FormPage = ({ user, item, id }) => {
     const { setTickets, userLog } = useContext(UserContext)
@@ -70,6 +71,7 @@ export const FormPage = ({ user, item, id }) => {
                 <h2 className="text-xl font-semibold text-slate-700 ">Información de Contacto</h2>
                 <p className="mt-6 text-l mb-6">{user.email}</p>
                 <hr />
+                <Card />
                 <h2 className="text-xl font-semibold text-slate-700 mt-7">DATOS DE ENVÍO</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mt-7">
@@ -98,7 +100,7 @@ export const FormPage = ({ user, item, id }) => {
                     <h2 className="text-xl font-semibold text-slate-700 mt-7">Detalles de Pago</h2>
                     <div className="mt-7">
                         <div className="flex flex-col gap-2 ">
-                            <input required type="text" placeholder="1234 5678 2345 7655" name="cardNumber"
+                            <input required type="text" placeholder="1234 5678 2345 7655" name="cardNumber" onChange={(e) => e.target.value}
                                 className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500" />
                             <div className="flex gap-4 ">
                                 <div className="flex flex-col gap-2 w-4/5">
@@ -116,7 +118,7 @@ export const FormPage = ({ user, item, id }) => {
                 <Modal dismissible show={openModal}>
                     <div className='border rounded-none bg-white'>
                         <Modal.Body>
-                                <h2 className='font-semibold text-3xl text-center text-slate-800'>ESTAMOS PROCESANDO TU PAGO</h2>
+                            <h2 className='font-semibold text-3xl text-center text-slate-800'>ESTAMOS PROCESANDO TU PAGO</h2>
                         </Modal.Body>
                     </div>
                 </Modal>
