@@ -18,6 +18,14 @@ export const findUserByEmailMongoDB = async (email) => {
     };
 };
 
+export const findUserByIdMongoDB = async (uid) => {
+    try {
+        return await userModel.findById(uid);
+    } catch (error) {
+        console.log(error);
+    };
+};
+
 //Eliminar Usuario
 export const deleteUser = async (uid) => {
     try {

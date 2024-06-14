@@ -1,27 +1,9 @@
-import { transporter } from "../../../config/nodemailer.js";
-import { mailTicket } from "../../../utils/mailTicket.js";
-import { mailPassword } from '../../../utils/mailPassword.js'
-import { createTicket } from "../../../services/FileSystem/mail.services.js";
+import { createTicket,sendRestorePassword,sendTicket } from "../../../services/FileSystem/mail.services.js";
 import { findCartById } from '../../../services/FileSystem/carts.services.js';
-import { appLogger } from '../../../config/loggers.js'
 import jwt from 'jsonwebtoken'
 import moment from 'moment';
 
 export default class MailManagerFS {
-
-    sendTicket = async (ticket, products, emailUser) => {
-        try {
-            const email = await transporter.sendMail({
-                from: 'CSport <cristian.eam85@gmail.com>',
-                to: emailUser,
-                subject: 'Gracias por tu compra!',
-                html: mailTicket(ticket, products),
-            });
-            appLogger.info('Correo enviado:', email.response);
-        } catch (error) {
-            appLogger.error('Error al enviar el correo:', error);
-        }
-    };
 
     async createTicket(req, res) {
         req.logger.info(`Creando ticket de compra - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
@@ -43,7 +25,7 @@ export default class MailManagerFS {
                 return res.status(404).json({ Msg: `Carrito no encontrado` });
             }
 
-            this.sendTicket(ticket, isCartFound.products, ticket.purchaser);
+            await sendTicket(ticket, isCartFound.products, ticket.purchaser);
             const newTicket = await createTicket(ticket);
 
             req.logger.info(`Ticket de compra creado con éxito - Código: ${ticket.codeTicket} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
@@ -51,20 +33,6 @@ export default class MailManagerFS {
         } catch (error) {
             req.logger.error(`Error al crear ticket: ${error}`);
             return res.status(500).json({ Msg: error });
-        }
-    };
-
-    sendRestorePassword = async (userEmail, token) => {
-        try {
-            const emailResponse = await transporter.sendMail({
-                from: 'CSport <cristian.eam85@gmail.com>',
-                to: userEmail,
-                subject: 'Restablecer contraseña',
-                html: mailPassword(token)
-            });
-            console.log('Correo enviado:', emailResponse.response);
-        } catch (error) {
-            console.error('Error al enviar el correo:', error);
         }
     };
 
@@ -81,7 +49,7 @@ export default class MailManagerFS {
             const token = jwt.sign({ sendEmail }, 'ecommerceSecret', { expiresIn: '1h' });
             req.logger.info(`Token de restablecimiento de contraseña creado - Email: ${sendEmail} - Token: ${token} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
-            await this.sendRestorePassword(sendEmail, token);
+            await sendRestorePassword(sendEmail, token);
             req.logger.info(`Correo de restablecimiento enviado con éxito - Email: ${sendEmail} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
             return res.status(200).json({ message: 'Correo de restablecimiento enviado' });

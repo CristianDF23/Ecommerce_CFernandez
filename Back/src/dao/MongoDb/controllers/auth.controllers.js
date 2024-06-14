@@ -1,9 +1,13 @@
 import { userNew } from '../../../services/MongoDb/auth.services.js';
 import { insertCart } from '../../../services/MongoDb/carts.services.js';
-import { insertUser, deleteUser, findUserByEmailMongoDB, updateUser, getUsers } from '../../../services/MongoDb/users.services.js';
+import { insertUser, deleteUser, findUserByEmailMongoDB, updateUser, getUsers, findUserByIdMongoDB } from '../../../services/MongoDb/users.services.js';
 import { isValidatePassword, createHash } from '../../../utils/bcrypt.js'
 import { extractedToken } from '../../../utils/cookies.js'
+import moment from 'moment'
 import jwt from 'jsonwebtoken'
+
+
+let userEmail
 
 export default class UserManagerMongoDB {
     //Registro de usuario
@@ -20,7 +24,8 @@ export default class UserManagerMongoDB {
     //Login de Usuario
     loginUser = async (req, res) => {
         try {
-            const isUserFound = await findUserByEmailMongoDB(req.body.email);
+            userEmail = req.body.email
+            const isUserFound = await findUserByEmailMongoDB(userEmail);
             if (!isUserFound) {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
@@ -30,12 +35,15 @@ export default class UserManagerMongoDB {
                 return res.status(401).json({ Error: `Usuario y/o Contraseña incorrecta` });
             }
             const { _id, email, first_name, last_name, phone, age, cart, rol } = isUserFound;
+
+            const lastConnection = moment().format("DD/MM/YYYY hh:mm:ss");
+            await updateUser(isUserFound._id, { last_connection: lastConnection });
+
             const token = jwt.sign(
                 { email: req.body.email, password: req.body.password, rol },
                 process.env.COOKIE_SECRET,
                 { expiresIn: '24h' }
             );
-
             res.cookie(process.env.COOKIE_USER, token, {
                 maxAge: 60 * 60 * 1000,
                 sameSite: 'None',
@@ -68,6 +76,15 @@ export default class UserManagerMongoDB {
     //Logout de Usuario
     logoutUser = async (req, res) => {
         try {
+            const isUserFound = await findUserByEmailMongoDB(userEmail);
+            if (!isUserFound) {
+                return res.status(401).json({ Error: `Usuario no encontrado` });
+            }
+
+            const lastConnection = moment().format("DD/MM/YYYY hh:mm:ss");
+
+            await updateUser(isUserFound._id, { last_connection: lastConnection });
+
             return res.clearCookie(process.env.COOKIE_USER).send('Cookie Eliminada');
         } catch (error) {
             req.logger.error(`Error al cerrar sesión: ${error}`);
@@ -141,5 +158,79 @@ export default class UserManagerMongoDB {
             return res.status(401).json({ message: 'Token inválido o expirado.' });
         }
     };
-    
+
+    updateDocumets = async (req, res) => {
+        try {
+
+
+            const userId = req.params.uid
+            const files = req.files;
+
+            const isUserFound = await findUserByIdMongoDB(userId);
+            if (!isUserFound) {
+                req.logger.warning(`Usuario no encontrado - ID: ${userId} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+                return res.status(404).json({ message: 'Usuario no encontrado.' });
+            }
+            const documentArray = [];
+            if (files.profile) {
+                const file = files.profile[0];
+                const nameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+                documentArray.push({
+                    name: nameWithoutExt,
+                    reference: file.path
+                });
+            }
+            if (files.product) {
+                files.product.forEach(file => {
+                    const nameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+                    documentArray.push({
+                        name: nameWithoutExt,
+                        reference: file.path
+                    });
+                });
+            }
+            if (files.documents) {
+                files.documents.forEach(file => {
+                    const nameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+                    documentArray.push({
+                        name: nameWithoutExt,
+                        reference: file.path
+                    });
+                });
+            }
+
+            isUserFound.documents = isUserFound.documents.concat(documentArray);
+            await isUserFound.save();
+
+            res.status(200).send('Documentacion actualizada con exito.');
+        } catch (error) {
+            res.status(500).send('Error al actualizar los documentos: ' + error.message);
+        }
+    }
+
+    updateUserRol = async (req, res) => {
+        try {
+            const userId = req.params.uid;
+            const isUserFound = await findUserByIdMongoDB(userId);
+
+            if (!isUserFound) {
+                req.logger.warning(`Usuario no encontrado - ID: ${userId} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
+                return res.status(404).json({ message: 'Usuario no encontrado.' });
+            }
+
+            const requiredDocuments = ['Identificacion', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+            const uploadedDocuments = isUserFound.documents.map(doc => doc.name);
+            const hasAllDocuments = requiredDocuments.every(doc => uploadedDocuments.includes(doc));
+
+            if (!hasAllDocuments) {
+                return res.status(400).send('Documentacion faltante, agregue todos los documentos');
+            }
+
+            await updateUser(isUserFound._id, {rol: 'Premium'})
+
+            res.status(200).send('Rol de usuario actualizado correctamente.');
+        } catch (error) {
+            res.status(500).send('Error al actualizar el rol de usuario: ' + error.message);
+        }
+    };
 }

@@ -143,7 +143,7 @@ export default class CartManagerFS {
             }
 
             isCartFound.products = [];
-            await upCart(req.params.cid, isCartFound);
+            await updateCart(req.params.cid, isCartFound);
 
             req.logger.info(`Productos eliminados correctamente - Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
@@ -172,7 +172,7 @@ export default class CartManagerFS {
             }
 
             isCartFound.products[productIndex].quantity = req.body.quantity;
-            await upCart(req.params.cid, isCartFound);
+            await updateCart(req.params.cid, isCartFound);
 
             req.logger.info(`Cantidad de producto actualizada en el carrito - Producto ID: ${req.params.pid}, Carrito ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
@@ -194,7 +194,7 @@ export default class CartManagerFS {
                 return res.status(400).json({ Msg: `No se encontró el carrito` });
             }
 
-            const arrayProducts = cart.products;
+            const arrayProducts = isCartFound.products;
             const updateStockProducts = arrayProducts.filter(elem => elem.product.stock >= elem.quantity);
             const updateProductsCart = arrayProducts.filter(elem => elem.product.stock < elem.quantity);
             isCartFound.products = updateProductsCart;

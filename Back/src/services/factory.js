@@ -39,7 +39,7 @@ switch (persistence) {
     case 'fileSystem':
         const { default: ProductManagerFS } = await import('../dao/FileSystem/controllers/products.controllers.js')
         const { default: CartManagerFS } = await import('../dao/FileSystem/controllers/carts.controllers.js')
-        const { default: UserManagerFS } = await import('../dao/FileSystem/controllers/auth.controllers.js')
+        const { default: UserManagerFS } = await import('../dao/FileSystem/controllers/auth.controller.js')
         const { default: MailManagerFS } = await import('../dao/FileSystem/controllers/mail.controllers.js')
         productController = new ProductManagerFS()
         cartController = new CartManagerFS()

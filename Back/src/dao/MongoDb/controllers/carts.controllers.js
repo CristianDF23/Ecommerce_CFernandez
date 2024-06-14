@@ -195,6 +195,7 @@ export default class CartManagerMongoDB {
 
         try {
             const isCartFound = await findCartById(req.params.cid);
+            console.log(isCartFound);
             if (!isCartFound) {
                 req.logger.warning(`No se encontró el carrito - ID: ${req.params.cid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
                 return res.status(400).json({ Msg: `No se encontró el carrito` });
@@ -217,7 +218,7 @@ export default class CartManagerMongoDB {
 
             req.logger.info(`Compra completada con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
-            res.status(200).json(cart);
+            res.status(200).json(isCartFound);
         } catch (error) {
             req.logger.error(`Error al completar la compra en ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`);
             return res.status(500).json({ Msg: error });
