@@ -1,4 +1,4 @@
-import productsModels from '../../dao/MongoDb/models/products.models.js'
+import productsModels from '../models/products.models.js'
 
 //Agregar Producto
 export const insertProduct = async (product) => {
@@ -10,7 +10,7 @@ export const insertProduct = async (product) => {
 };
 
 //Mostar productos
-export const getProducts = async (filters, option) => {
+export const allProducts = async (filters, option) => {
     try {
         return await productsModels.paginate(filters, option);
     } catch (error) {
@@ -37,7 +37,7 @@ export const findProduct = async (product) => {
 };
 
 //Eliminar Producto
-export const deleteProduct = async (pid) => {
+export const delProduct = async (pid) => {
     try {
         const product = await productsModels.findByIdAndDelete(pid);
         return product;
@@ -47,7 +47,7 @@ export const deleteProduct = async (pid) => {
 };
 
 //Actualizar Producto
-export const updateProduct = async (pid, product) =>{
+export const upProduct = async (pid, product) =>{
     try {
         return await productsModels.findByIdAndUpdate(pid, product, {new: true});
     } catch (error) {

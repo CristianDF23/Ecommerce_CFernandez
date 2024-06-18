@@ -1,4 +1,4 @@
-import userModel from '../../dao/MongoDb/models/users.models.js'
+import userModel from '../models/users.models.js'
 
 //Crear Usuario
 export const insertUser = async (user) => {
@@ -9,8 +9,8 @@ export const insertUser = async (user) => {
     };
 };
 
-//Buscar usuario por su email
-export const findUserByEmailMongoDB = async (email) => {
+//Buscar usuario por su id
+export const findUserByEmail = async (email) => {
     try {
         return await userModel.findOne({email: email});
     } catch (error) {
@@ -18,16 +18,8 @@ export const findUserByEmailMongoDB = async (email) => {
     };
 };
 
-export const findUserByIdMongoDB = async (uid) => {
-    try {
-        return await userModel.findById(uid);
-    } catch (error) {
-        console.log(error);
-    };
-};
-
-//Eliminar Usuario
-export const deleteUser = async (uid) => {
+// //Eliminar Usuario
+export const delUser = async (uid) => {
     try {
         const user = await userModel.findByIdAndDelete(uid);
         return user
@@ -38,7 +30,7 @@ export const deleteUser = async (uid) => {
 
 
 //Actualizar Usuario
-export const updateUser = async (uid, user) =>{
+export const upUser = async (uid, user) =>{
     try {
         return await userModel.findByIdAndUpdate(uid, user, {new: true});
     } catch (error) {
@@ -47,10 +39,18 @@ export const updateUser = async (uid, user) =>{
 };
 
 //Todos los usuarios
-export const getUsers = async () =>{
+export const allUsers = async () =>{
     try {
         return await userModel.find().select('-password')
     } catch (error) {
         console.log(error);
     }
 }
+
+export const findUserById = async (uid) => {
+    try {
+        return await userModel.findById(uid);
+    } catch (error) {
+        console.log(error);
+    };
+};

@@ -1,44 +1,44 @@
-import { Router } from 'express'
-import passport from 'passport'
-import { authController } from '../services/factory.js'
-import { authorization } from '../middleware/authorization.js'
+import { Router } from "express";
+import passport from "passport";
+import { deleteUser, loginUser, logoutUser, updateUser, getUsers, updatePassword, updateDocumets, updateUserRol } from "../controllers/auth.controller.js";
+import { authorization } from "../middleware/authorization.js";
 import { documents } from '../utils/multer.js'
 
-const routerAuth = Router()
+const routerAuth = Router();
 
-routerAuth.post('/register', passport.authenticate('register', { failureMessage: 'El usuario ya existe', }), (req, res) => {
-    return res.status(201).json(req.user)
-});
+routerAuth.post('/register', passport.authenticate('register', { failureMessage: 'El usuario ya existe' }), (req, res) => {
+    return res.status(201).json(req.user);
+})
 
-routerAuth.post('/login', authController.loginUser)
+routerAuth.post('/login', loginUser);
 
 routerAuth.get('/profile', passport.authenticate('jwt', { session: false }), authorization('Usuario'), (req, res) => {
     return res.json({ email: req.user.email, rol: req.user.rol })
-}
-)
-
-routerAuth.get('/github', passport.authenticate('github', {}), (req, res) => { })
-
-routerAuth.get('/callbackGithub', passport.authenticate('github', {}), (req, res) => {
-    req.session.user = req.user
-    return res.status(201).send({ Msg: `Usuario registrado correctamente` })
 })
 
-routerAuth.get('/logout', authController.logoutUser)
+routerAuth.get('/github', passport.authenticate('github', {}), (req, res) => { });
 
-routerAuth.put('/premium/:uid', authController.updateUserRol)
+routerAuth.get('/callbackGithub', passport.authenticate('github', {}), (req, res) => {
+    req.session.user = req.user;
+    return res.status(201).send({ Msg: `Usuario registrado correctamente` });
+});
 
-routerAuth.post('/:uid/documents', documents.fields([
+routerAuth.put('/premium/:uid', passport.authenticate('jwt', { session: false }), authorization(['Admin']), updateUserRol);
+
+routerAuth.get('/logout', logoutUser)
+
+
+routerAuth.post('/:uid/documents', passport.authenticate('jwt', { session: false }), documents.fields([
     { name: 'profile', maxCount: 1 },
     { name: 'product', maxCount: 4 },
-    { name: 'documents', maxCount: 3 }]), authController.updateDocumets)
+    { name: 'documents', maxCount: 3 }]), updateDocumets)
 
-routerAuth.put('/:uid', authController.updateUser)
+routerAuth.put('/:uid', updateUser)
 
-routerAuth.delete('/:uid', authController.deleteUser)
+routerAuth.delete('/', deleteUser)
 
-routerAuth.get('/', authController.getUsers)
+routerAuth.get('/', getUsers)
 
-routerAuth.post('/restorePassword', authController.updatePassword)
+routerAuth.post('/restorePassword', updatePassword)
 
-export default routerAuth
+export default routerAuth;

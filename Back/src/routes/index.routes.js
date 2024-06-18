@@ -4,7 +4,8 @@ import routerCarts from "./carts.routes.js";
 import routerAuth from "./auth.routes.js";
 import routerMail from "./mail.routes.js";
 import routerMocks from "./mocks.routes.js";
-import routerLogger from './logger.routes.js'
+import routerLogger from "./logger.routes.js";
+
 const routerIndex = Router();
 
 routerIndex.use('/api/products', routerProduts);

@@ -2,22 +2,24 @@ import passport from "passport";
 import local from 'passport-local';
 import github from 'passport-github'
 import jwt from "passport-jwt";
-
 import { ExtractJwt } from "passport-jwt";
-import { authController, findUser } from '../services/factory.js'
-import { cookieExtractor } from "../utils/cookies.js";
+import usersModels from "../models/users.models.js";
+import { findUserByEmail } from "../services/users.services.js";
+import { loginGithub, registerUser } from "../controllers/auth.controller.js";
+import { cookieExtractor } from "../services/auth.services.js";
+
 
 export const initPassport = () => {
     passport.use('register', new local.Strategy(
         { usernameField: 'email', passReqToCallback: true },
         async (req, username, password, done) => {
             try {
-                const existUser = await findUser(req.body.email);
-                if (existUser) {
+                const user = await findUserByEmail(req.body.email)
+                if (user) {
                     return done(null, false, 'El usuario ya existe');
-                }
-                const registerUser = await authController.registerUser(req.body)
-                return done(null, registerUser);
+                };
+                const newUser = await registerUser(req.body)
+                return done(null, newUser);
             } catch (error) {
                 done('Error al registrar el usuario', error);
             };
@@ -38,6 +40,7 @@ export const initPassport = () => {
         }
     ));
 
+
     passport.use('github', new github.Strategy(
         {
             clientID: process.env.GITHUB_CLIENT_ID,
@@ -46,12 +49,12 @@ export const initPassport = () => {
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                let user = await findUser(profile._json.email)
+                let user = await findUserByEmail(profile._json.email)
                 if (user) {
                     return done(null, false, 'El usuario ya existe');
                 };
-                const registerUserGithub = await authController.loginGithub(profile)
-                return done(null, registerUserGithub);
+                const newUser = await loginGithub(profile)
+                return done(null, newUser);
             } catch (error) {
                 return done(error)
             };
@@ -62,7 +65,8 @@ export const initPassport = () => {
         done(null, user);
     });
 
-    passport.deserializeUser((user, done) => {
+    passport.deserializeUser((id, done) => {
+        let user = usersModels.findById(id);
         done(null, user);
     });
 };

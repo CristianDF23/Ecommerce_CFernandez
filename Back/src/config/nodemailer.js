@@ -6,6 +6,6 @@ export const transporter = nodemailer.createTransport({
     secure: false,
     auth: {
         user: "cristian.eam85@gmail.com",
-        pass: "wwykkpxngbhnmztm"
+        pass: "wwykkpxngbhnmztm",
     },
 });

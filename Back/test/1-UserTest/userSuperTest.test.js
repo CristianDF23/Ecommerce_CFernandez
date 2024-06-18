@@ -13,16 +13,16 @@ describe('Testing E-commerce APP (Usuarios)', () => {
         this.timeout(5000);
         this.cookie = null;
         this.mockUser = {
-            first_name: "test01",
-            last_name: "test01",
+            first_name: "Test01",
+            last_name: "Test01",
             email: "test@test.com",
             password: "212301Co",
             age: 22,
             phone: 123456,
         };
         this.mockUser2 = {
-            first_name: "test02",
-            last_name: "test02",
+            first_name: "Test02",
+            last_name: "Test02",
             email: "testUsuario@test.com",
             password: "1234",
             age: 22,
@@ -36,7 +36,6 @@ describe('Testing E-commerce APP (Usuarios)', () => {
             try {
                 const { statusCode, _body } = await requester.post('/api/auth/register').send(this.mockUser);
                 const res = await requester.post('/api/auth/register').send(this.mockUser2);
-                
                 idUser = res._body[0]._id
 
                 expect(statusCode).is.equal(201);
@@ -145,9 +144,9 @@ describe('Testing E-commerce APP (Usuarios)', () => {
     describe('Testing logout de usuario', () => {
         it("Se espera eliminar la cookie de sesión al hacer logout", async function () {
             try {
-                const logoutResponse = await requester.get('/api/auth/logout');
+                const logoutResponse = await requester.get('/api/auth/logout').send({email: this.mockUser.email});
                 expect(logoutResponse.status).to.equal(200);
-                expect(logoutResponse.text).to.equal('Cookie Eliminada');
+                expect(logoutResponse.text).to.equal('Sesion cerrada correctamente');
             } catch (error) {
                 console.error('Error en el test de logout de usuario:', error);
                 throw error;

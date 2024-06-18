@@ -13,15 +13,15 @@ const environment = program.opts().mode;
 
 if (environment == "prod") {
     dotenv.config({
-        path: "./src/config/.env.prod"
+        path: "./src/.env.prod"
     })
 }else if(environment == 'dev'){
     dotenv.config({
-        path: "./src/config/.env.dev"
+        path: "./src/.env.dev"
     })
 }else{
     dotenv.config({
-        path: "./src/config/.env.test"
+        path: "./src/.env.test"
     })
 }
 

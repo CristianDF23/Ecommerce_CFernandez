@@ -1,5 +1,5 @@
 import multer from 'multer'
-import __dirname from '../path.js'
+import {__dirname} from '../path.js'
 
 let folder = 'documents';
 
@@ -29,7 +29,7 @@ const files = multer.diskStorage(
             cb(null, `${__dirname}/public/documents/${folder}`);
         },
         filename: (req, file, cb) => {
-            cb(null, `${file.originalname}`);
+            cb(null, `${req.user ? req.user.email : 'unknown'}_${file.originalname}`);
         }
     }
 )

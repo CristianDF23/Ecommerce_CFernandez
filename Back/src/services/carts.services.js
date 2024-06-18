@@ -1,4 +1,4 @@
-import cartsModels from '../../dao/MongoDb/models/cart.models.js'
+import cartsModels from '../models/cart.models.js'
 
 //Crear Carrito
 export const insertCart = async () => {
@@ -19,7 +19,7 @@ export const findCartById = async (id) => {
 };
 
 // //Eliminar Carrito
-export const deleteCart = async (cid) => {
+export const delCart = async (cid) => {
     try {
         const cart = await cartsModels.findByIdAndDelete(cid);
         return cart
@@ -30,7 +30,7 @@ export const deleteCart = async (cid) => {
 
 
 //Actualizar Cart
-export const updateCart = async (cid, cart) =>{
+export const upCart = async (cid, cart) =>{
     try {
         return await cartsModels.findByIdAndUpdate(cid, cart, {new: true});
     } catch (error) {

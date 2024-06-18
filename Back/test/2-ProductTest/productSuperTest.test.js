@@ -140,8 +140,9 @@ describe('Testing E-commerce APP (Products)', () => {
                     title: 'Test Product Actualizado',
                     price: 1200                 
                 };
-                const res = await requester.put(`/api/products/${id}`).send(updatedProductData)
-                
+                const res = await requester.put(`/api/products/${id}`)
+                .set('Cookie', [`${this.cookie.name}=${this.cookie.value}`])
+                .send(updatedProductData)
                 expect(res.statusCode).to.equal(200)
                 expect(res._body._id).to.equal(id)
                 expect(res._body.title).to.equal('Test Product Actualizado')

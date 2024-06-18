@@ -1,57 +1,15 @@
-import { useState } from 'react';
 import logo from '../assets/logo.png'
-import {useNavigate} from 'react-router-dom'
-import axios from 'axios';
-import Swal from 'sweetalert2'
 
 export const Register = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({});
-
-    const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:8080/api/auth/register', formData)
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 2000
-            });
-            Toast.fire({
-                icon: "success",
-                title: "Usuario registrado correctamente"
-            });
-            setTimeout(() => {
-                navigate('/login')
-            }, 3000);
-        } catch (error) {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000
-            });
-            Toast.fire({
-                icon: "error",
-                title: `El correo ingresado ya esta registrado`
-            });
-        }
-    };
-
     return (
         <section className="w-5/6 flex flex-row-reverse mx-auto">
-            <form onSubmit={handleSubmit} className="w-1/2 px-5 py-10 mx-auto flex flex-col gap-2">
+            <form action="http://localhost:8080/api/auth/register" method="post" className="w-1/2 px-5 py-10 mx-auto flex flex-col gap-2">
                 <div className="mx-auto mb-10 flex flex-col items-center justify-center gap-2 ">
                     <img className="w-20" src={logo} alt="" />
                     <h2 className="font-semibold text-2xl">Crear Nueva Cuenta</h2>
                 </div>
                 <div className="relative z-0 w-full mb-5 group">
-                    <input type="email" name="email" id="email" onChange={handleInputChange}
+                    <input type="email" name="email" id="email"
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                         placeholder=" " required />
                     <label htmlFor="email"
@@ -59,14 +17,14 @@ export const Register = () => {
                     </label>
                 </div>
                 <div className="relative z-0 w-full mb-5 group">
-                    <input type="password" name="password" id="password" onChange={handleInputChange}
+                    <input type="password" name="password" id="password"
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                         placeholder=" " required />
                     <label htmlFor="password"
                         className="absolute bg-white text-l px-3 text-gray-500 -translate-y-6 translate-x-2 top-3 z-20">Contraseña</label>
                 </div>
                 <div className="relative z-0 w-full mb-5 group">
-                    <input type="password" name="passwordVal" id="passwordVal" onChange={handleInputChange}
+                    <input type="password" name="passwordVal" id="passwordVal"
                         className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                         placeholder=" " required />
                     <label htmlFor="passwordVal"
@@ -75,7 +33,7 @@ export const Register = () => {
                 </div>
                 <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
-                        <input type="text" name="first_name" id="first_name" onChange={handleInputChange}
+                        <input type="text" name="first_name" id="first_name"
                             className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                             placeholder=" " required />
                         <label htmlFor="first_name"
@@ -83,7 +41,7 @@ export const Register = () => {
                             Nombre</label>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                        <input type="text" name="last_name" id="last_name" onChange={handleInputChange}
+                        <input type="text" name="last_name" id="last_name"
                             className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                             placeholder=" " required />
                         <label htmlFor="last_name"
@@ -93,7 +51,7 @@ export const Register = () => {
                 </div>
                 <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
-                        <input type="tel" name="phone" id="phone" onChange={handleInputChange}
+                        <input type="tel" name="phone" id="phone"
                             className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                             placeholder=" " required />
                         <label htmlFor="phone"
@@ -101,7 +59,7 @@ export const Register = () => {
                             Teléfono</label>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                        <input type="text" name="age" id="age" onChange={handleInputChange}
+                        <input type="text" name="age" id="age"
                             className="block py-4 px-4 w-full h-15 text-xl text-black bg-transparent border border-gray-600 focus:border-green-500"
                             placeholder=" " required />
                         <label htmlFor="age"
@@ -116,7 +74,7 @@ export const Register = () => {
                         clipRule="evenodd" />
                 </svg>
                 </a>
-                <button type='submit' id="register" className="mx-auto btns">Crear Cuenta</button>
+                <button id="register" type="submit" className="mx-auto btns">Crear Cuenta</button>
             </form>
             <div id='containerReg' className="w-1/2">
             </div>

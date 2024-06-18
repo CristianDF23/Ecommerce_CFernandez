@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "start:dev": "nodemon src/app.js --mode dev",
-    "start:test": "nodemon src/app.js --mode test --persist mongoDB",
-    "start:prod": "node src/app.js --mode prod --persist mongoDB",
+    "start:test": "nodemon src/app.js --mode test",
+    "start:prod": "node src/app.js --mode prod",
     "test": "mocha 'test/**/*.test.js'"
   },
   "keywords": [],

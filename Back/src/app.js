@@ -7,10 +7,13 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
-import config from './config/command.dotenv.js';
+import config from './config/command.dotenv.js'
 
 import { initPassport } from './config/passport.js';
+import { __dirname } from "./path.js"
 import { addLogger, appLogger } from './config/loggers.js';
+import MongoSingleton from './config/mongoDB.js';
+
 
 const app = express();
 
@@ -19,6 +22,10 @@ const corsOptions = {
     origin: ['http://localhost:5173', 'http://localhost:8080'],
     credentials: true,
 };
+
+//PUBLIC
+app.use(express.static(__dirname + "/public"))
+
 app.use(cors(corsOptions));
 
 //SESSION
@@ -41,11 +48,11 @@ app.use(passport.initialize());
 //Swagger Config
 
 const swaggerOptions = {
-    definition: {
-        openapi: '3.0.1',
-        info: {
-            title: 'Documentación APP E-commerce',
-            description: 'Documentacion de los endpoints de cada API'
+    definition:{
+        openapi:'3.0.1',
+        info:{
+            title: 'Documentación API E-commerce',
+            description: 'Documentacion de E-commerce'
         }
     },
     apis: ['./src/docs/**/*.yaml']
@@ -57,10 +64,19 @@ app.use(addLogger);
 
 app.use(routerIndex);
 
-let PORT = config.port;
+async function connectMongo() {
+    appLogger.info("Iniciando servicio para MongoDB");
+    try {
+        await MongoSingleton.getInstance();
+    } catch (error) {
+        appLogger.error("Error al iniciar MongoDB:", error);
+        process.exit(1);
+    }
+}
 
-app.listen(PORT, async () => {
+let PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
     appLogger.http(`Servidor iniciado en PUERTO: ${PORT}`);
-    appLogger.info(`Modo: ${config.mode}`);
-    appLogger.info(`Persistencia: ${config.persistence}`);
+    connectMongo()
 });
