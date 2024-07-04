@@ -63,6 +63,5 @@ export const mailDeletedAccount = () => {
     </div>
 </body>
 </html>
-
     `
 }

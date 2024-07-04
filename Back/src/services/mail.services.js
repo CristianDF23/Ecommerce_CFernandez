@@ -3,7 +3,8 @@ import ticketModels from '../models/ticket.models.js';
 import { mailDeletedAccount } from '../utils/mailDeleteAccount.js'
 import { mailPassword } from '../utils/mailPassword.js'
 import { mailTicket } from '../utils/mailTicket.js'
-
+import { transporter } from '../config/nodemailer.js';
+import { mailDeletedProduct } from '../utils/mailDeleteProduct.js';
 
 //Crear Ticket
 export const createTicket = async (ticket) => {
@@ -51,6 +52,20 @@ export const deletedAccount = async (userEmail) => {
             to: userEmail,
             subject: 'Equipo de cuentas de CSport',
             html: mailDeletedAccount()
+        });
+        console.log('Correo enviado:', emailResponse.response);
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+    }
+};
+
+export const deletedProduct = async (userEmail, prod) => {
+    try {
+        const emailResponse = await transporter.sendMail({
+            from: 'CSport <cristian.eam85@gmail.com>',
+            to: userEmail,
+            subject: 'Equipo de cuentas de CSport',
+            html: mailDeletedProduct(prod)
         });
         console.log('Correo enviado:', emailResponse.response);
     } catch (error) {

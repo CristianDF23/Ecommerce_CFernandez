@@ -1,8 +1,8 @@
 import { insertProduct, findProductById, allProducts, delProduct, upProduct } from "../services/products.services.js";
+import { deletedProduct } from "../services/mail.services.js"
 
 //Crear producto nuevo
 export const createProduct = async (req, res) => {
-    req.logger.info(`Iniciando la creación del producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     try {
         const user = req.user
         let owner;
@@ -23,7 +23,8 @@ export const createProduct = async (req, res) => {
             thumbnails
         } else {
             req.files.forEach((file, index) => {
-                thumbnails[`thumbnail_${index + 1}`] = `http://localhost:${process.env.PORT}/img/products/${file.filename}`;
+                const arrayThumbnails = ['one', 'two', 'three', 'four']
+                thumbnails[`${arrayThumbnails[index]}`] = `${process.env.HOST}${process.env.PORT}/img/products/${file.filename}`;
             });
         }
 
@@ -41,6 +42,7 @@ export const createProduct = async (req, res) => {
         };
 
         const newProduct = await insertProduct(product);
+
         if (!newProduct) {
             req.logger.warning(`Error al crear el producto - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(400).json({ Msg: `Error al crear el producto, el codigo ya existe` });
@@ -55,7 +57,6 @@ export const createProduct = async (req, res) => {
 
 //Mostrar todos los productos/Paginación
 export const getProducts = async (req, res) => {
-    req.logger.info(`Obteniendo productos - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     try {
         const { limit = 10, page = 1, sort = '', category = '', brand = '' } = req.query;
         const filter = {};
@@ -107,7 +108,6 @@ export const getProducts = async (req, res) => {
 
 //Mostrar un producto
 export const getProduct = async (req, res) => {
-    req.logger.info(`Obteniendo producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     try {
         const product = await findProductById(req.params.pid);
         if (!product) {
@@ -125,7 +125,6 @@ export const getProduct = async (req, res) => {
 
 //Eliminar un producto
 export const deleteProduct = async (req, res) => {
-    req.logger.info(`Eliminando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     const { email } = req.user
     try {
         const isProductFound = await findProductById(req.params.pid)
@@ -134,6 +133,7 @@ export const deleteProduct = async (req, res) => {
             req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(200).json(deleteById);
         } else if (req.user.rol == 'Admin') {
+            await deletedProduct(isProductFound.owner, isProductFound)
             const deleteById = await delProduct(req.params.pid)
             req.logger.info(`Producto con ID ${req.params.pid} eliminado con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
             return res.status(200).json(deleteById);
@@ -150,8 +150,6 @@ export const deleteProduct = async (req, res) => {
 
 //Actualizar un producto
 export const updateProduct = async (req, res) => {
-    req.logger.info(`Actualizando producto con ID ${req.params.pid} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const { pid } = req.params;
         const updateData = req.body;

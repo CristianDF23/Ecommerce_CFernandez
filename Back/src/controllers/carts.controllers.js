@@ -4,7 +4,6 @@ import { upProduct } from '../services/products.services.js';
 
 //Crear carrito nuevo
 export const createCart = async (req, res) => {
-    req.logger.info(`Iniciando la creación del carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
     try {
         const isNewCart = await insertCart();
@@ -24,7 +23,6 @@ export const createCart = async (req, res) => {
 
 //Agregar producto al carrito
 export const addProducts = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para agregar productos al carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
     const user = req.user
     try {
         const product = await findProductById(req.params.pid);
@@ -66,8 +64,6 @@ export const addProducts = async (req, res) => {
 
 //Mostrar productos del carrito
 export const getCartProducts = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para obtener productos del carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await findCartById(req.params.cid);
         if (!cart) {
@@ -86,8 +82,6 @@ export const getCartProducts = async (req, res) => {
 
 //Eliminar carrito
 export const deleteCart = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para eliminar el carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await delCart(req.params.cid);
         if (!cart) {
@@ -106,8 +100,6 @@ export const deleteCart = async (req, res) => {
 
 //Eliminar un producto del carrito
 export const deleteProductOfCart = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para eliminar un producto del carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await findCartById(req.params.cid);
         if (!cart) {
@@ -136,8 +128,6 @@ export const deleteProductOfCart = async (req, res) => {
 
 //Eliminar todos los productos del carrito
 export const deleteAllProducts = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para eliminar todos los productos del carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await findCartById(req.params.cid);
         if (!cart) {
@@ -160,8 +150,6 @@ export const deleteAllProducts = async (req, res) => {
 
 //Actualizar la cantidad de un producto
 export const updateQuantity = async (req, res) => {
-    req.logger.info(`Iniciando el proceso para actualizar la cantidad de un producto en el carrito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await findCartById(req.params.cid);
         if (!cart) {
@@ -191,8 +179,6 @@ export const updateQuantity = async (req, res) => {
 
 //Finalizar Compra
 export const purchase = async (req, res) => {
-    req.logger.info(`Iniciando el proceso de compra - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const cart = await findCartById(req.params.cid);
         if (!cart) {
@@ -216,7 +202,6 @@ export const purchase = async (req, res) => {
         }
 
         req.logger.info(`Compra completada con éxito - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
         res.status(200).json(cart);
     } catch (error) {
         req.logger.error(`Error al completar la compra en ${req.method} en ${req.url} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()} --> ${error}`);

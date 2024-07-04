@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { deleteUser, loginUser, logoutUser, updateUser, getUsers, updatePassword, updateDocumets, updateUserRol } from "../controllers/auth.controller.js";
+import { deleteUsers, deleteUser, loginUser, logoutUser, updateUser, getUsers, updatePassword, updateDocuments, updateUserRol } from "../controllers/auth.controller.js";
 import { authorization } from "../middleware/authorization.js";
 import { documents } from '../utils/multer.js'
 
@@ -23,19 +23,21 @@ routerAuth.get('/callbackGithub', passport.authenticate('github', {}), (req, res
     return res.status(201).send({ Msg: `Usuario registrado correctamente` });
 });
 
-routerAuth.put('/premium/:uid', passport.authenticate('jwt', { session: false }), authorization(['Admin']), updateUserRol);
+routerAuth.put('/premium/:uid', passport.authenticate('jwt', { session: false }), authorization('Admin'), updateUserRol);
 
-routerAuth.get('/logout', logoutUser)
+routerAuth.post('/logout', logoutUser)
 
 
-routerAuth.post('/:uid/documents', passport.authenticate('jwt', { session: false }), documents.fields([
+routerAuth.post('/:uid/documents', passport.authenticate('jwt', { session: false }), authorization(['Usuario', 'Premium']), documents.fields([
     { name: 'profile', maxCount: 1 },
     { name: 'product', maxCount: 4 },
-    { name: 'documents', maxCount: 3 }]), updateDocumets)
+    { name: 'documents', maxCount: 3 }]), updateDocuments)
 
 routerAuth.put('/:uid', updateUser)
 
-routerAuth.delete('/', deleteUser)
+routerAuth.delete('/', passport.authenticate('jwt', { session: false }), authorization('Admin'), deleteUsers)
+
+routerAuth.delete('/:uid', deleteUser)
 
 routerAuth.get('/', getUsers)
 

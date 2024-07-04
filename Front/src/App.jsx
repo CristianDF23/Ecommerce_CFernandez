@@ -3,16 +3,16 @@ import { NavBar } from './components/NavBar/NavBar';
 import { UserProvider } from './context/userContext';
 
 import './App.css';
-import { Home } from './views/Home';
+import { Home } from './views/Home/Home';
 import { Footer } from './components/Footer';
-import { Product } from './views/Product';
-import { Register } from './views/Register';
-import { Login } from './views/Login';
-import { Cart } from './views/Cart';
-import { Admin } from './views/Admin';
-import { User } from './views/User';
-import { PurchaseCompleted } from './views/PurchaseCompleted';
-import { RestorePassword } from './views/RestorePassword';
+import { Product } from './views/Product/Product';
+import { Register } from './views/Auth/Register';
+import { Login } from './views/Auth/Login';
+import { Cart } from './views/Cart/Cart';
+import { Admin } from './views/Admin/Admin';
+import { User } from './views/User/User';
+import { PurchaseCompleted } from './views/Auth/PurchaseCompleted';
+import { RestorePassword } from './views/Auth/RestorePassword';
 
 function App() {
     return (
@@ -20,17 +20,17 @@ function App() {
             <BrowserRouter>
                 <NavBar />
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/page/:page" element={<Home />} />
-                    <Route path="/category/:cat/page/:pag" element={<Home />} />
-                    <Route path='/product/:id' element={<Product />} />
-                    <Route path='/register' element={<Register />} />
-                    <Route path='/login' element={<Login />} />
-                    <Route path='/restorePass/:token' element={<RestorePassword/>}/>
-                    <Route path='/cart' element={<Cart />} />
-                    <Route path='/admin' element={<Admin />} />
-                    <Route path='/profile' element={<User />} />
-                    <Route path='/purchaseCompleted' element={<PurchaseCompleted/>}/>
+                    <Route path="/api/v1/home" element={<Home />} />
+                    <Route path="/api/v1/home/page/:pageNumber" element={<Home />} />
+                    <Route path="/api/v1/home/category/:category/page/:pageNumber" element={<Home />} />
+                    <Route path='/api/v1/login' element={<Login />} />
+                    <Route path='/api/v1/register' element={<Register />} />
+                    <Route path='/api/v1/product/:productId' element={<Product />} />
+                    <Route path='/api/v1/admin' element={<Admin />} />
+                    <Route path='/api/v1/profile' element={<User />} />
+                    <Route path='/api/v1/cart' element={<Cart />} />
+                    <Route path='/api/v1/restorePass/:token' element={<RestorePassword />} />
+                    <Route path='/api/v1/purchaseCompleted' element={<PurchaseCompleted />} />
                 </Routes>
                 <Footer />
             </BrowserRouter>

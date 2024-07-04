@@ -1,5 +1,5 @@
 export const mailPassword = (token) => {
-    return `
+  return `
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -53,7 +53,7 @@ export const mailPassword = (token) => {
       margin: 20px auto;
       padding: 10px 30px;
       background-color: #000000;
-      color: #FFFFFF;
+      color: white;
       text-align: center;
       text-decoration: none;
       border-radius: 6px;
@@ -79,7 +79,7 @@ export const mailPassword = (token) => {
         <li>Confirma tu nueva contraseña.</li>
         <li>Haga clic en Enviar.</li>
       </ol>
-      <a href="http://localhost:5173/restorePass/token=${token}" class="button">RESTABLECER CONTRASEÑA</a>
+      <a href="http://localhost:5173/api/v1/restorePass/token=${token}" class="button">RESTABLECER CONTRASEÑA</a>
       <p>Este enlace es válido una sola vez y expira en 1 hora.</p>
       <p>Si no solicitó restablecer su contraseña, ignore este mensaje o comuníquese con nuestro servicio al cliente.</p>
     </div>

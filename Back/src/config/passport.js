@@ -19,7 +19,7 @@ export const initPassport = () => {
                     return done(null, false, 'El usuario ya existe');
                 };
                 const newUser = await registerUser(req.body)
-                return done(null, newUser);
+                return done(null, {message: 'Usuario registrado correctamente'});
             } catch (error) {
                 done('Error al registrar el usuario', error);
             };

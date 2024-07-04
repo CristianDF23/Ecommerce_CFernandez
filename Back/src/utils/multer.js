@@ -1,7 +1,6 @@
 import multer from 'multer'
-import {__dirname} from '../path.js'
+import { __dirname } from '../path.js'
 
-let folder = 'documents';
 
 const thumbnails = multer.diskStorage(
     {
@@ -14,13 +13,12 @@ const thumbnails = multer.diskStorage(
     }
 )
 
-export const imgProducts = multer({
-    storage: thumbnails,
-})
+export const imgProducts = multer({ storage: thumbnails })
 
 const files = multer.diskStorage(
     {
         destination: (req, file, cb) => {
+            let folder = 'documents';
             if (file.fieldname === 'profile') {
                 folder = 'profiles';
             } else if (file.fieldname === 'product') {
@@ -29,11 +27,9 @@ const files = multer.diskStorage(
             cb(null, `${__dirname}/public/documents/${folder}`);
         },
         filename: (req, file, cb) => {
-            cb(null, `${req.user ? req.user.email : 'unknown'}_${file.originalname}`);
+            cb(null, `${file.originalname}`);
         }
     }
 )
 
-export const documents = multer({
-    storage: files,
-})
+export const documents = multer({ storage: files })

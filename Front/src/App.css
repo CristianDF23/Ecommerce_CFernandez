@@ -146,3 +146,27 @@ h1{
     border-radius: 0px;
     background: none;
 }
+
+.inpDoc input{
+    border-radius: 0%;
+}
+
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+.file-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+.file-label {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    color: Black;
+    cursor: pointer;
+}

@@ -3,10 +3,8 @@ import { findCartById } from '../services/carts.services.js';
 import jwt from 'jsonwebtoken'
 import moment from 'moment';
 
-
+//Crear Ticket
 export const insertTicket = async (req, res) => {
-    req.logger.info(`Creando ticket de compra - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     try {
         const ticket = {
             codeTicket: Math.floor(Math.random() * 100000000),
@@ -35,17 +33,15 @@ export const insertTicket = async (req, res) => {
     }
 };
 
+//Crear Token Para Restablecer Contraseña
 export const tokenRestorePassword = async (req, res) => {
     const { sendEmail } = req.body;
-    req.logger.info(`Solicitud de restablecimiento de contraseña recibida - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
-
     if (!sendEmail) {
         req.logger.warning(`Correo electrónico no proporcionado - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
         return res.status(400).json({ message: 'El email es requerido' });
     }
-
     try {
-        const token = jwt.sign({ sendEmail }, 'ecommerceSecret', { expiresIn: '1h' });
+        const token = jwt.sign({ sendEmail }, process.env.SECRET_PASSWORD, { expiresIn: '1h' });
         req.logger.info(`Token de restablecimiento de contraseña creado - Email: ${sendEmail} - Token: ${token} - at ${new Date().toLocaleDateString()} / ${new Date().toLocaleTimeString()}`);
 
         await sendRestorePassword(sendEmail, token);
